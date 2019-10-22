@@ -108,7 +108,8 @@ public class My3DData extends Object {
     boolean cprojinit=false;
 
     boolean elementsLinked=false; // influences the action when pressing "T", "t", "1-8"
-    
+    boolean timesLinked=true; // influences the action when pressing ",", ".", "0,9"
+
     int  elemR=0;  // defines which element is red
     int  elemG=0;  // defines which element is green
     int  elemB=0;  // defines which element is blue
@@ -120,6 +121,22 @@ public class My3DData extends Object {
 
     Vector<Bundle> MyBundle;    // containes maxcs, mincs, ElementModelNr;
 
+    class ColorInfo {
+        public Double MinCs;
+        public Double MaxCs;
+        public Integer cmapcLow;
+        public Integer cmapcHigh;
+    }
+    Vector<Vector<ColorInfo>> TimesColorInfo;    // only need for individual brightness control over time
+
+    public void setElementsLinked(boolean v) {
+        elementsLinked=v;
+        if (elementsLinked)
+            copyLinkedProperties(ActiveElement);
+    }
+    public void setTimesLinked(boolean v) {
+        timesLinked=v;
+    }
 
     public void setFontSize(int FS) {
         FontSize=FS;
@@ -970,21 +987,21 @@ public class My3DData extends Object {
 	GetBundleAt(ActiveElement).cmapIsInverse = ! GetBundleAt(ActiveElement).cmapIsInverse;
     }
     /*private void Setmincs(int elem, double val) {
-        BundleAt(elem).SetMincs(val);
+        GetBundleAt(elem).SetMincs(val);
       }
     
     private void Setmaxcs(int elem, double val) {
         System.out.println("SetMaxcs "+elem+": " + val+"\n");
-        BundleAt(elem).SetMaxcs(val);
+        GetBundleAt(elem).SetMaxcs(val);
       }*/
     
     private double Getmincs(int elem) {
-        return BundleAt(elem).GetMincs();
+        return GetBundleAt(elem).GetMincs();
     }
     
     private double Getmaxcs(int elem) {
-        // System.out.println("GetMaxcs "+elem+": " + BundleAt(elem).GetMaxcs()+"\n");
-	return BundleAt(elem).GetMaxcs();
+        // System.out.println("GetMaxcs "+elem+": " + GetBundleAt(elem).GetMaxcs()+"\n");
+	return GetBundleAt(elem).GetMaxcs();
     }
     
     public double GetScaledMincs(int elem) {
@@ -1018,10 +1035,10 @@ public class My3DData extends Object {
     
     public boolean SetThresh(int e, double min, double max)  // returns whether the display is valid
     {
-       if ((BundleAt(e).GetMincs() != min) ||  (BundleAt(e).GetMaxcs() != max))
+       if ((GetBundleAt(e).GetMincs() != min) ||  (GetBundleAt(e).GetMaxcs() != max))
        	{
-       	BundleAt(e).SetMincs(min);
-       	BundleAt(e).SetMaxcs(max);
+       	GetBundleAt(e).SetMincs(min);
+       	GetBundleAt(e).SetMaxcs(max);
        	return false;
        }
        return true;
@@ -1034,9 +1051,9 @@ public class My3DData extends Object {
 
     public boolean AdjustThresh(int elementNum) {
         boolean valid=true;
-        BundleAt(elementNum).cmapcHigh = Bundle.MaxCTable-1;  // set the color map thresholds back to normal
-        BundleAt(elementNum).cmapcLow = 0;
-        BundleAt(elementNum).CompCMap();
+        GetBundleAt(elementNum).cmapcHigh = Bundle.MaxCTable-1;  // set the color map thresholds back to normal
+        GetBundleAt(elementNum).cmapcLow = 0;
+        GetBundleAt(elementNum).CompCMap();
         double min = ElementAt(elementNum).ROIMinimum(ROIAt(elementNum));
         double max = ElementAt(elementNum).ROIMaximum(ROIAt(elementNum));
         valid = SetThresh(elementNum,min,max);
@@ -1097,9 +1114,9 @@ public class My3DData extends Object {
         double max=GlobalMax();
         boolean valid = true;
         for (int elementNum=0;elementNum<Elements;elementNum++) {
-            BundleAt(elementNum).cmapcHigh = Bundle.MaxCTable - 1;  // set the color map thresholds back to normal
-            BundleAt(elementNum).cmapcLow = 0;
-            BundleAt(elementNum).CompCMap();
+            GetBundleAt(elementNum).cmapcHigh = Bundle.MaxCTable - 1;  // set the color map thresholds back to normal
+            GetBundleAt(elementNum).cmapcLow = 0;
+            GetBundleAt(elementNum).CompCMap();
             if (! SetThresh(elementNum, min, max))
                 valid=false;
             transferThresh(elementNum);  // copy to all time steps
@@ -1108,39 +1125,57 @@ public class My3DData extends Object {
     }
 
     public void copyLinkedProperties(int anElement) { // copies a particular element threshold values to all element
-        double TLow = BundleAt(anElement).GetMincs();
-        double THigh = BundleAt(anElement).GetMaxcs();
-        boolean ShowOvUn = BundleAt(anElement).ShowOvUn;
-        boolean LogScale = BundleAt(anElement).LogScale;
-        boolean cmapIsInverse = BundleAt(anElement).cmapIsInverse;
-        int ElementModelNr=BundleAt(anElement).ElementModelNr;    // just a number for the current model
-        double Gamma=BundleAt(anElement).Gamma;
+        double TLow = GetBundleAt(anElement).GetMincs();
+        double THigh = GetBundleAt(anElement).GetMaxcs();
+        boolean ShowOvUn = GetBundleAt(anElement).ShowOvUn;
+        boolean LogScale = GetBundleAt(anElement).LogScale;
+        boolean cmapIsInverse = GetBundleAt(anElement).cmapIsInverse;
+        int ElementModelNr = GetBundleAt(anElement).ElementModelNr;    // just a number for the current model
+        double Gamma = GetBundleAt(anElement).Gamma;
 
         for (int elementNum=0;elementNum<Elements;elementNum++) {
-            BundleAt(elementNum).SetMincs(TLow);
-            BundleAt(elementNum).SetMaxcs(THigh);
-            BundleAt(elementNum).ShowOvUn = ShowOvUn;
-            BundleAt(elementNum).LogScale = LogScale;
-            BundleAt(elementNum).cmapIsInverse = cmapIsInverse;
-            BundleAt(elementNum).ElementModelNr = ElementModelNr;
-            BundleAt(elementNum).Gamma = Gamma;
-            if (BundleAt(elementNum).cmapcLow > 0)
-                BundleAt(elementNum).CompCMap();   // This is usually faster than recomputing images
+            GetBundleAt(elementNum).SetMincs(TLow);
+            GetBundleAt(elementNum).SetMaxcs(THigh);
+            GetBundleAt(elementNum).ShowOvUn = ShowOvUn;
+            GetBundleAt(elementNum).LogScale = LogScale;
+            GetBundleAt(elementNum).cmapIsInverse = cmapIsInverse;
+            GetBundleAt(elementNum).ElementModelNr = ElementModelNr;
+            GetBundleAt(elementNum).Gamma = Gamma;
+            if (GetBundleAt(elementNum).cmapcLow > 0)
+                GetBundleAt(elementNum).CompCMap();   // This is usually faster than recomputing images
             else
                 CThreshToValThresh(elementNum,0.25,1.0);  // If underflow a recomputation becomes necessary, but with 25% extra space
         }
     }
 
+    public void setColorMapThresh(int elem, int low, int high)  // These functions are far quicker for the display especially for large images
+    {
+        GetBundleAt(elem).cmapcLow = low;
+        GetBundleAt(elem).cmapcHigh = high;
+
+        GetBundleAt(elem).CompCMap();   // This is usually faster than recomputing images
+//        if (GetBundleAt(elem).cmapcLow > 0)
+//            GetBundleAt(elem).CompCMap();   // This is usually faster than recomputing images
+//        else
+//            CThreshToValThresh(elem,0.25,1.0);  // If underflow a recomputation becomes necessary, but with 25% extra space
+//
+//        if (GetBundleAt(elem).cmapcHigh <= Bundle.MaxCTable-1)
+//            GetBundleAt(elem).CompCMap();   // This is usually faster than recomputing images
+//        else
+//            CThreshToValThresh(elem,0.0,0.75);  // If underflow a recomputation becomes necessary, but with 25% extra space
+    }
+
+
     public void adjustColorMapLThresh(double howmuch)  // These functions are far quicker for the display especially for large images
     {
 	    double howmany= (howmuch*Bundle.MaxCTable);
-        double max = BundleAt(ActiveElement).cmapcHigh;
-        double min = BundleAt(ActiveElement).cmapcLow;
+        double max = GetBundleAt(ActiveElement).cmapcHigh;
+        double min = GetBundleAt(ActiveElement).cmapcLow;
         if (howmany < 0 || max > min + howmany)
-            BundleAt(ActiveElement).cmapcLow += (int) howmany;
+            GetBundleAt(ActiveElement).cmapcLow += (int) howmany;
 
-        if (BundleAt(ActiveElement).cmapcLow > 0)
-            BundleAt(ActiveElement).CompCMap();   // This is usually faster than recomputing images
+        if (GetBundleAt(ActiveElement).cmapcLow > 0)
+            GetBundleAt(ActiveElement).CompCMap();   // This is usually faster than recomputing images
         else
             CThreshToValThresh(ActiveElement,0.25,1.0);  // If underflow a recomputation becomes necessary, but with 25% extra space
     }
@@ -1148,23 +1183,23 @@ public class My3DData extends Object {
     public void adjustColorMapUThresh(double howmuch) 
     {
 	    double howmany= (howmuch*Bundle.MaxCTable);
-        double max = BundleAt(ActiveElement).cmapcHigh;
-        double min = BundleAt(ActiveElement).cmapcLow;
+        double max = GetBundleAt(ActiveElement).cmapcHigh;
+        double min = GetBundleAt(ActiveElement).cmapcLow;
         if (howmany > 0 || max + howmany > min)
-            BundleAt(ActiveElement).cmapcHigh += (int) howmany;
+            GetBundleAt(ActiveElement).cmapcHigh += (int) howmany;
 
-        if (BundleAt(ActiveElement).cmapcHigh <= Bundle.MaxCTable-1)
-            BundleAt(ActiveElement).CompCMap();   // This is usually faster than recomputing images
+        if (GetBundleAt(ActiveElement).cmapcHigh <= Bundle.MaxCTable-1)
+            GetBundleAt(ActiveElement).CompCMap();   // This is usually faster than recomputing images
         else
             CThreshToValThresh(ActiveElement,0.0,0.75);  // If underflow a recomputation becomes necessary, but with 25% extra space
     }
 
     public double GetMinThresh(int elem)   // returns the Effective threshold independent of which part of it is colormap and which is Mincs
     {
-        double max = BundleAt(elem).GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
-        double min = BundleAt(elem).GetMincs();
-        // double cmax = BundleAt(elem).cmapcHigh;    //  These are the current indices into the colormap
-        double cmin = BundleAt(elem).cmapcLow;
+        double max = GetBundleAt(elem).GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
+        double min = GetBundleAt(elem).GetMincs();
+        // double cmax = GetBundleAt(elem).cmapcHigh;    //  These are the current indices into the colormap
+        double cmin = GetBundleAt(elem).cmapcLow;
         
         double scale = (max-min) / Bundle.MaxCTable;
         double nmin = min + scale*cmin;
@@ -1173,10 +1208,10 @@ public class My3DData extends Object {
 
     public double GetMaxThresh(int elem)   // returns the Effective threshold independent of which part of it is colormap and which is Mincs
     {
-        double max = BundleAt(elem).GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
-        double min = BundleAt(elem).GetMincs();
-        double cmax = BundleAt(elem).cmapcHigh;    //  These are the current indices into the colormap
-        // double cmin = BundleAt(elem).cmapcLow;
+        double max = GetBundleAt(elem).GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
+        double min = GetBundleAt(elem).GetMincs();
+        double cmax = GetBundleAt(elem).cmapcHigh;    //  These are the current indices into the colormap
+        // double cmin = GetBundleAt(elem).cmapcLow;
         
         double nmax = min + (max-min)*cmax/Bundle.MaxCTable;
         return nmax;
@@ -1186,10 +1221,10 @@ public class My3DData extends Object {
     public void CThreshToValThresh(int elem, double facmin, double facmax)   // copies the color-map threshold to a real value threshold
     {  // The factor determines the percentage at of the colormap at which the new min/max position will point (defaults = 0,1.0)
         if (elem < 0) elem=ActiveElement;
-        double max = BundleAt(elem).GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
-        double min = BundleAt(elem).GetMincs();
-        double cmax = BundleAt(elem).cmapcHigh;    //  These are the current indices into the colormap
-        double cmin = BundleAt(elem).cmapcLow;
+        double max = GetBundleAt(elem).GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
+        double min = GetBundleAt(elem).GetMincs();
+        double cmax = GetBundleAt(elem).cmapcHigh;    //  These are the current indices into the colormap
+        double cmin = GetBundleAt(elem).cmapcLow;
         // if (cmin == 0 && cmax == Bundle.MaxCTable-1) return;  // No need to change anything!
 
         double cmaxnew = (int) ((Bundle.MaxCTable-1)*facmax);   // new indices into colormap
@@ -1199,23 +1234,23 @@ public class My3DData extends Object {
         double scale2 = (cmax-cmin)/(cmaxnew-cminnew);
         double nmax = max - scale*(Bundle.MaxCTable - (cmax+scale2*(Bundle.MaxCTable-1-cmaxnew)));
         double nmin = min + scale*(cmin - scale2*cminnew);
-        
-        BundleAt(elem).SetMincs(nmin);
-        BundleAt(elem).SetMaxcs(nmax);
-        BundleAt(elem).cmapcLow = (int) cminnew;
-        BundleAt(elem).cmapcHigh = (int) cmaxnew;
+
+        GetBundleAt(elem).SetMincs(nmin);
+        GetBundleAt(elem).SetMaxcs(nmax);
+        GetBundleAt(elem).cmapcLow = (int) cminnew;
+        GetBundleAt(elem).cmapcHigh = (int) cmaxnew;
         InvalidateSlices();InvalidateProjs(elem);
         transferThresh(elem);
-        BundleAt(elem).CompCMap();
+        GetBundleAt(elem).CompCMap();
     }
     
     public void addLThresh(double howmuch) {
 	double howmany= (howmuch*ActElement().MaxValue);
-        double max = BundleAt(ActiveElement).GetMaxcs();
-        double min = BundleAt(ActiveElement).GetMincs();
+        double max = GetBundleAt(ActiveElement).GetMaxcs();
+        double min = GetBundleAt(ActiveElement).GetMincs();
         if (howmany < 0 || max > min + howmany)
         {
-            BundleAt(ActiveElement).SetMincs(min + howmany);
+            GetBundleAt(ActiveElement).SetMincs(min + howmany);
             InvalidateSlices();InvalidateProjs(ActiveElement);
         }
         transferThresh(ActiveElement);
@@ -1223,11 +1258,11 @@ public class My3DData extends Object {
 
     public void addUThresh(double howmuch) {
 	double howmany=(howmuch*ActElement().MaxValue);
-        double max = BundleAt(ActiveElement).GetMaxcs();
-        double min = BundleAt(ActiveElement).GetMincs();
+        double max = GetBundleAt(ActiveElement).GetMaxcs();
+        double min = GetBundleAt(ActiveElement).GetMincs();
         if (howmany > 0 || max + howmany > min)
         {
-            BundleAt(ActiveElement).SetMaxcs(max + howmany);
+            GetBundleAt(ActiveElement).SetMaxcs(max + howmany);
             InvalidateSlices();InvalidateProjs(ActiveElement);
         }
         transferThresh(ActiveElement);
@@ -1236,19 +1271,19 @@ public class My3DData extends Object {
     public void initThresh() {
 	for (int e=0;e<Elements;e++)
 	    {
-              BundleAt(e).cmapcLow = 0;
-              BundleAt(e).cmapcHigh = Bundle.MaxCTable-1;  // set the color map thresholds back to normal
-              BundleAt(e).CompCMap();
+            GetBundleAt(e).cmapcLow = 0;
+            GetBundleAt(e).cmapcHigh = Bundle.MaxCTable-1;  // set the color map thresholds back to normal
+            GetBundleAt(e).CompCMap();
               AnElement ne = ElementAt(e);
               if (ne instanceof FloatElement || ne instanceof DoubleElement)
                 {
-                    BundleAt(e).SetMincs(ne.Min);
-                    BundleAt(e).SetMaxcs(ne.Max);
+                    GetBundleAt(e).SetMincs(ne.Min);
+                    GetBundleAt(e).SetMaxcs(ne.Max);
                 }
               else
                 {
-                    BundleAt(e).SetMincs(ne.OffsetV);
-                    BundleAt(e).SetMaxcs(ne.MaxValue);
+                    GetBundleAt(e).SetMincs(ne.OffsetV);
+                    GetBundleAt(e).SetMaxcs(ne.MaxValue);
                 }
             ToggleLog(e,0); // logarithmic off
             transferThresh(e);
@@ -1269,8 +1304,8 @@ public class My3DData extends Object {
 
         for (int e=0;e<Elements;e++)
 	    {
-                BundleAt(e).SetMincs(min);
-                BundleAt(e).SetMaxcs(max);
+            GetBundleAt(e).SetMincs(min);
+            GetBundleAt(e).SetMaxcs(max);
                 ToggleLog(e,0);
                 transferThresh(e);
             }
@@ -1306,11 +1341,16 @@ public class My3DData extends Object {
     }
 
     public void setTime(int num) {
-	if (num >= Times)
-	    num=num%Times;
-	if (num < 0)
-	    num=(num+Times) % Times;
-	ActiveTime=num;
+        storeMinMaxCs();
+
+        if (num >= Times)
+            num=num%Times;
+        if (num < 0)
+            num=(num+Times) % Times;
+        ActiveTime=num;
+        if (timesLinked == false)
+            retrieveMinMaxCs();
+
         GetElementsFromTime();
         GetProjsFromTime();
     }
@@ -1321,15 +1361,56 @@ public class My3DData extends Object {
         setTime(newtime);
     }
 
+    void storeMinMaxCs() {
+        Vector<ColorInfo> AllColInfo = new Vector();
+        ColorInfo ColInfo=null;
+        for (int e=0;e<Elements;e++) {
+            //AllMin.add(GetBundleAt(e).GetMincs());
+            //AllMax.add(GetBundleAt(e).GetMaxcs());
+            ColInfo=new ColorInfo();
+            ColInfo.cmapcLow = GetBundleAt(e).cmapcLow;
+            ColInfo.cmapcHigh = GetBundleAt(e).cmapcHigh;
+            ColInfo.MinCs = GetBundleAt(e).GetMincs();
+            ColInfo.MaxCs = GetBundleAt(e).GetMaxcs();
+            AllColInfo.add(ColInfo);
+            // System.out.println("Stored TimeInfo "+ActiveTime+" Elem: "+e+", "+ColInfo.cmapcLow+", "+ColInfo.cmapcHigh+','+ColInfo.MinCs + ", " + ColInfo.MaxCs + " Size: "+AllColInfo.size()+"\n");
+        }
+        while (TimesColorInfo.size() < Times)
+            TimesColorInfo.add(AllColInfo);
+        TimesColorInfo.set(ActiveTime,AllColInfo);
+    }
+
+    void retrieveMinMaxCs() {
+        Vector<ColorInfo> AllCol = TimesColorInfo.get(ActiveTime);
+        ColorInfo ColInfo=new ColorInfo();
+        for (int e=0;e<Elements;e++) {
+            if (AllCol != null)
+                if (e < AllCol.size()) {
+                    ColInfo = AllCol.get(e);
+                    GetBundleAt(e).SetMincs(ColInfo.MinCs);
+                    GetBundleAt(e).SetMaxcs(ColInfo.MaxCs);
+                    setColorMapThresh(e, ColInfo.cmapcLow,ColInfo.cmapcHigh);
+                    // SetThresh(e,ColInfo.MinCs,ColInfo.MaxCs);
+                    // System.out.println("Retrieved TimeInfo "+ActiveTime + " Elem: "+e+" "+ ColInfo.cmapcLow + ", " + ColInfo.cmapcHigh + ", " + ColInfo.MinCs + ", " + ColInfo.MaxCs + " Size: "+AllCol.size()+"\n");
+                }
+            else
+                System.out.println("Problem with Element "+e+"\n");
+        }
+        // UpdateAll();
+    }
+
     public void advanceTime(int howmany) {
+    storeMinMaxCs();
 	ActiveTime+= howmany;
 	if (ActiveTime < 0)
 	    ActiveTime += Times;
 	if (ActiveTime < 0)
 	    ActiveTime = 0;
+	if (timesLinked == false)
+            retrieveMinMaxCs();
 	ActiveTime %= Times;
-        GetElementsFromTime();
-        GetProjsFromTime();
+	GetElementsFromTime();
+    GetProjsFromTime();
     }
 
     public void setElement(int num) {
@@ -1372,7 +1453,7 @@ public class My3DData extends Object {
    public double GetROISum(int elem) {
        DoProject(elem,0);  // Also checks if really necessary
        for (int d=0;d<3;d++)
-           if (BundleAt(elem).ProjValid[d] && ProjAt(d,elem).isValid)
+           if (GetBundleAt(elem).ProjValid[d] && ProjAt(d,elem).isValid)
                 return ProjAt(d,elem).ROISum;
 
        // DoProject(elem,2);  // Also checks if really necessary
@@ -1382,7 +1463,7 @@ public class My3DData extends Object {
    public double GetROIVoxels(int elem) {
        DoProject(elem,0);  // Also checks if really necessary
        for (int d=0;d<3;d++)
-           if (BundleAt(elem).ProjValid[d] && ProjAt(d,elem).isValid)
+           if (GetBundleAt(elem).ProjValid[d] && ProjAt(d,elem).isValid)
                 return ProjAt(d,elem).ROIVoxels;
 
        // DoProject(elem,2);  // Also checks if really necessary
@@ -1392,7 +1473,7 @@ public class My3DData extends Object {
    public double GetROIAvg(int elem) {
        DoProject(elem,0);  // Also checks if really necessary
        for (int d=0;d<3;d++)
-           if (BundleAt(elem).ProjValid[d] && ProjAt(d,elem).isValid)
+           if (GetBundleAt(elem).ProjValid[d] && ProjAt(d,elem).isValid)
                 return ProjAt(d,elem).ROIAvg;
 
        // DoProject(elem,2);  // Also checks if really necessary
@@ -1402,7 +1483,7 @@ public class My3DData extends Object {
    public double GetROIMax(int elem) {
        DoProject(elem,0);  // Also checks if really necessary
        for (int d=0;d<3;d++)
-           if (BundleAt(elem).ProjValid[d] && ProjAt(d,elem).isValid)
+           if (GetBundleAt(elem).ProjValid[d] && ProjAt(d,elem).isValid)
                 return ProjAt(d,elem).ROIMax;
 
        // DoProject(elem,2);  // Also checks if really necessary
@@ -1412,7 +1493,7 @@ public class My3DData extends Object {
    public double GetROIMin(int elem) {
        DoProject(elem,0);  // Also checks if really necessary
        for (int d=0;d<3;d++)
-           if (BundleAt(elem).ProjValid[d] && ProjAt(d,elem).isValid)
+           if (GetBundleAt(elem).ProjValid[d] && ProjAt(d,elem).isValid)
                 return ProjAt(d,elem).ROIMin;
 
        // DoProject(elem,2);  // Also checks if really necessary
@@ -1558,7 +1639,8 @@ public class My3DData extends Object {
         md.addNumericField("DisplayOffset Y: ",DispOffset[1],5);
         md.addNumericField("DisplayOffset Z: ",DispOffset[2],5);
         md.addNumericField("Display Gamma: ",GetGamma(e),5);
-        md.addCheckbox("ElementsLinked",elementsLinked);
+        md.addCheckbox("Elements Linked",elementsLinked);
+        md.addCheckbox("Time Linked",timesLinked);
         md.showDialog();
         if (! md.wasCanceled())
         {
@@ -1573,6 +1655,7 @@ public class My3DData extends Object {
             SetGamma(e,Gamma);
             if (elementsLinked)
                 copyLinkedProperties(ActiveElement);
+            timesLinked=md.getNextBoolean();
         }
     }
 
@@ -1634,7 +1717,7 @@ public class My3DData extends Object {
                 ((ASlice) ProjsAtTime(time)[0].elementAt(e)).Invalidate();
                 ((ASlice) ProjsAtTime(time)[1].elementAt(e)).Invalidate();
                 ((ASlice) ProjsAtTime(time)[2].elementAt(e)).Invalidate();
-                BundleAt(e).Invalidate();
+                GetBundleAt(e).Invalidate();
             }
         ColorProjsAtTime(time)[0].Invalidate();
         ColorProjsAtTime(time)[1].Invalidate();
@@ -1645,7 +1728,7 @@ public class My3DData extends Object {
                 ((ASlice) ProjsAtTime(time)[0].elementAt(which)).Invalidate();
                 ((ASlice) ProjsAtTime(time)[1].elementAt(which)).Invalidate();
                 ((ASlice) ProjsAtTime(time)[2].elementAt(which)).Invalidate();
-                BundleAt(which).Invalidate();
+                GetBundleAt(which).Invalidate();
                 if (InOverlayDispl(which))
                 {
                     ColorProjsAtTime(time)[0].Invalidate();
@@ -1745,11 +1828,11 @@ public class My3DData extends Object {
 
     public void ToggleSquareROIs() {
         for (int e=0;e < Elements;e++)
-            BundleAt(e).ToggleROI();
+            GetBundleAt(e).ToggleROI();
         InvalidateProjs(-1);  // all invalid
     }
     
-    public boolean SquareROIs() { return BundleAt(ActiveElement).SquareROIs();};
+    public boolean SquareROIs() { return GetBundleAt(ActiveElement).SquareROIs();};
 
     public void ToggleColor(boolean set) {
 	colormode=set;
@@ -1794,9 +1877,9 @@ public class My3DData extends Object {
     }
 
     
-    Bundle BundleAt (int num) {
-        return MyBundle.elementAt(num);
-    }
+    //Bundle GetBundleAt (int num) {
+    //    return MyBundle.elementAt(num);
+    //}
     
     
     private AnElement GNE(AnElement oldelem, Vector<AnElement> ElementsList, Vector<ASlice> ProjList[]) // will generate a new element in the list
@@ -1848,7 +1931,8 @@ public class My3DData extends Object {
         
         // Bundle bd = (Bundle) MyBundle.lastElement();
 	GNE(oldelem);
-        MyBundle.addElement((Bundle) BundleAt(Elements-2).clone());
+        MyBundle.addElement((Bundle) GetBundleAt(Elements-2).clone());
+        TimesColorInfo.add((Vector<ColorInfo>) null);
 
         ActiveElement=Elements-1;
         if (Elements == 2)
@@ -1936,10 +2020,11 @@ public class My3DData extends Object {
         else         //if (DataType == IntegerType)
             nb=new Bundle(0,0.0,MaxValue);
         MyBundle.addElement(nb);
+        TimesColorInfo.addElement((Vector<ColorInfo>) null);
         nb.TakeSqrROIs(ProjMin,ProjMax);
         nb.TakePolyROIs(ROIPolygons);
         if (ne > 0)  // This means, there was already a first element
-            if (BundleAt(0).ActiveROI == BundleAt(0).rectROI)
+            if (GetBundleAt(0).ActiveROI == GetBundleAt(0).rectROI)
                 nb.ActiveROI = nb.rectROI;
             else
                 nb.ActiveROI = nb.polyROI;
@@ -2063,9 +2148,12 @@ public class My3DData extends Object {
     {
         if (Elements > 1) // The last element must not be deleted
         {
-        for (int t=0;t<Times;t++)
+        for (int t=0;t<Times;t++) {
             DeleteActElement(ElementsAtTime(t));
+            TimesColorInfo.get(t).removeElement(ActiveElement);
+        }
         MyBundle.removeElementAt(ActiveElement);
+
         MyProjections[0].removeElementAt(ActiveElement);
         MyProjections[1].removeElementAt(ActiveElement);
         MyProjections[2].removeElementAt(ActiveElement);
@@ -2190,8 +2278,8 @@ public class My3DData extends Object {
         // System.out.println("Applying Histogram \n");
         AnElement ne = DataToHistogram.ActElement();
         ActElement().ComputeHistMask(ne,ActROI());
-        DataToHistogram.BundleAt(DataToHistogram.Elements-1).SetMaxcs(ne.Max);
-        DataToHistogram.BundleAt(DataToHistogram.Elements-1).SetMincs(ne.Min);
+        DataToHistogram.GetBundleAt(DataToHistogram.Elements-1).SetMaxcs(ne.Max);
+        DataToHistogram.GetBundleAt(DataToHistogram.Elements-1).SetMincs(ne.Min);
         }
     }
 
@@ -2228,8 +2316,8 @@ public class My3DData extends Object {
                             GetOffset(ActiveElement),1.0,0.0,GetAxisNames(),GetAxisUnits());
             ElementAt(ne).SetScales(1.0,0.0,"inside ROI","a.u.");
             ElementAt(ne).GenerateMask(ROIAt(prevActElem),GetGateElem(),ElementAt(prevActElem),false); // will only generate threshold
-            BundleAt(ne).SetMaxcs(1);
-            BundleAt(ne).SetMincs(0);
+            GetBundleAt(ne).SetMaxcs(1);
+            GetBundleAt(ne).SetMincs(0);
         }
         setElement(ne);
     }
@@ -2253,7 +2341,7 @@ public class My3DData extends Object {
     }  
     
     ROI ROIAt(int elem) {
-        return BundleAt(elem).ActiveROI;
+        return GetBundleAt(elem).ActiveROI;
     }
     
     ROI ActROI() {
@@ -2284,7 +2372,7 @@ public class My3DData extends Object {
         ROIPolygons[dir].translate(DX,DY);
         for (int e=0;e<Elements;e++)
         {
-            BundleAt(e).TakePolyROIs(ROIPolygons);
+            GetBundleAt(e).TakePolyROIs(ROIPolygons);
             InvalidateProjs(e);  // all projections are invalid
             DoProject(e,dir);
         }
@@ -2295,7 +2383,7 @@ public class My3DData extends Object {
         Rectangle r2 = GetSqrROI(dir);
         for (int e=0;e<Elements;e++)
         {
-            BundleAt(e).UpdateSqrROI(r2.x + DX,r2.y + DY, r2.x+r2.width + DX, r2.y+r2.height + DY,dir);
+            GetBundleAt(e).UpdateSqrROI(r2.x + DX,r2.y + DY, r2.x+r2.width + DX, r2.y+r2.height + DY,dir);
         	InvalidateProjs(e);  // all projections are invalid
         	DoProject(e,dir);
         }
@@ -2316,7 +2404,7 @@ public class My3DData extends Object {
 //            
 //        ROIPolygons[dir].addPoint(ROIX,ROIY);
 //        for (int e=0;e<Elements;e++) {
-//            BundleAt(e).TakePolyROIs(ROIPolygons);
+//            GetBundleAt(e).TakePolyROIs(ROIPolygons);
 //    		InvalidateProjs(e);  // all projections are invalid
 //    		DoProject(e,dir);
 //    		}
@@ -2327,7 +2415,7 @@ public class My3DData extends Object {
     {
         ROIPolygons[dir]=myNewROI;
         for (int e=0;e<Elements;e++) {
-            BundleAt(e).TakePolyROIs(ROIPolygons);
+            GetBundleAt(e).TakePolyROIs(ROIPolygons);
     		InvalidateProjs(e);  // all projections are invalid
     		DoProject(e,dir);
     		}
@@ -2338,7 +2426,7 @@ public class My3DData extends Object {
     public void ClearPolyROIs(int dir) {
         ROIPolygons[dir] = null;
         for (int e=0;e<Elements;e++)
-            BundleAt(e).TakePolyROIs(ROIPolygons);
+            GetBundleAt(e).TakePolyROIs(ROIPolygons);
         InvalidateProjs(-1);  // all projections are invalid
     }
     
@@ -2347,7 +2435,7 @@ public class My3DData extends Object {
         ROIPolygons[1] = null;
         ROIPolygons[2] = null;
         for (int e=0;e<Elements;e++)
-            BundleAt(e).TakePolyROIs(ROIPolygons);
+            GetBundleAt(e).TakePolyROIs(ROIPolygons);
         InvalidateProjs(-1);  // all projections are invalid
         }
     
@@ -2386,7 +2474,7 @@ public class My3DData extends Object {
         PlanesD[0].addElement(new Double(vecx));PlanesD[1].addElement(new Double(vecy));PlanesD[2].addElement(new Double(vecz));
         // Just add the starting points to the Polygon
         for (int e=0;e<Elements;e++)
-            BundleAt(e).TakePlaneROIs(PlanesS,PlanesD);
+            GetBundleAt(e).TakePlaneROIs(PlanesS,PlanesD);
         InvalidateProjs(-1);  // all projections are invalid
         return;
     }
@@ -2395,12 +2483,12 @@ public class My3DData extends Object {
         PlanesS[0].removeAllElements();PlanesS[1].removeAllElements();PlanesS[2].removeAllElements();
         PlanesD[0].removeAllElements();PlanesD[1].removeAllElements();PlanesD[2].removeAllElements();
         for (int e=0;e<Elements;e++)
-            BundleAt(e).TakePlaneROIs(PlanesS,PlanesD);
+            GetBundleAt(e).TakePlaneROIs(PlanesS,PlanesD);
         InvalidateProjs(-1);
     }
     
     public Rectangle GetSqrROI(int dim) {
-        return BundleAt(ActiveElement).rectROI.GetSqrROI(dim);
+        return GetBundleAt(ActiveElement).rectROI.GetSqrROI(dim);
     }
     
     public void TakeROI(int ROIX,int ROIY, int ROIXe, int ROIYe,int dir)
@@ -2425,7 +2513,7 @@ public class My3DData extends Object {
             ProjMin[1] = ROIY;ProjMax[1] = ROIYe;
         }
         for (int e=0;e<Elements;e++)
-            BundleAt(e).UpdateSqrROI(ROIX,ROIY, ROIXe, ROIYe,dir);
+            GetBundleAt(e).UpdateSqrROI(ROIX,ROIY, ROIXe, ROIYe,dir);
         InvalidateProjs(-1);  // all projections are invalid
         return;
     }
@@ -2454,8 +2542,8 @@ public class My3DData extends Object {
     {
         // double max = 
         ActElement().ComputeHistogram(DataToHistogram.GetGateElem(), DataToHistogram.ActROI());
-        BundleAt(ActiveElement).SetMaxcs(ActElement().Max);
-        BundleAt(ActiveElement).SetMincs(ActElement().Min);
+        GetBundleAt(ActiveElement).SetMaxcs(ActElement().Max);
+        GetBundleAt(ActiveElement).SetMincs(ActElement().Min);
         // ToggleColor(false);
         // ToggleModel(5);  // Log- colormap
         ToggleLog(1);  // logarithmic model
@@ -2470,7 +2558,7 @@ public class My3DData extends Object {
       if (! colormode)
        {
        if (dim >= 0)
-           // myim.getProcessor().setMinAndMax(0,BundleAt(ActiveElement).MaxCTable);  // Full range for slices and projections
+           // myim.getProcessor().setMinAndMax(0,GetBundleAt(ActiveElement).MaxCTable);  // Full range for slices and projections
            myim.getProcessor().setMinAndMax(0,Bundle.MaxCTable);  // Full range for slices and projections
        else
           myim.getProcessor().setMinAndMax((GetScaledMincs(ActiveElement)-coeff[0])/coeff[1],(GetScaledMaxcs(ActiveElement)-coeff[0])/coeff[1]);
@@ -2826,11 +2914,11 @@ public class My3DData extends Object {
     }
     
     public boolean GetMIPMode(int DimNr) {  // returns whether projection mode is "on"
-        return BundleAt(ActiveElement).MIPMode;
+        return GetBundleAt(ActiveElement).MIPMode;
     }
     
     public boolean GetLogMode() {  // returns whether projection mode is "on"
-        return BundleAt(ActiveElement).LogScale;
+        return GetBundleAt(ActiveElement).LogScale;
     }
 
     ASlice ActProj(int DimNr) {
@@ -2842,9 +2930,9 @@ public class My3DData extends Object {
     }
 
     public void ToggleProj(int DimNr,boolean mipmode) {
-        if (mipmode != BundleAt(ActiveElement).MIPMode)
+        if (mipmode != GetBundleAt(ActiveElement).MIPMode)
             InvalidateProjs(-1);
-    	BundleAt(ActiveElement).MIPMode = mipmode;
+    	GetBundleAt(ActiveElement).MIPMode = mipmode;
         ProjMode[DimNr] = ! ProjMode[DimNr];
     }
 
@@ -2908,13 +2996,15 @@ public My3DData(My3DData other) {   // operates on the same data but allows diff
         MyTimes = other.MyTimes;         // Contains the data
         Times = other.Times;
         MyBundle = new Vector<Bundle>();
+        TimesColorInfo = new Vector<Vector<ColorInfo>>();
+
         MyTimeProj = new Vector<Vector<ASlice>[]>();  // stores arrays[3] of vectors
         MyTimeColorProj = new Vector<ASlice[]>();
         // something is wrong with the line below
         //MyBundle = (Vector) other.MyBundle.clone();  // clones the full vector with all its elements
-        for (int e=0;e < other.Elements;e++)
-            MyBundle.addElement((Bundle) other.BundleAt(e).clone());
-
+        for (int e=0;e < other.Elements;e++) {
+            MyBundle.addElement((Bundle) other.GetBundleAt(e).clone());
+        }
         for (int t=0;t < other.Times;t++)
             {
             MyProjections = (Vector<ASlice>[]) new Vector[3];    // these manage progections
@@ -3033,6 +3123,7 @@ public My3DData(Container myapp,int sizex,int sizey, int sizez,
         MyTimeProj = new Vector<Vector<ASlice>[]>();  // stores arrays[3] of vectors
         MyTimeColorProj = new Vector<ASlice[]>();
         MyBundle = new Vector<Bundle>();
+        TimesColorInfo = new Vector<Vector<ColorInfo>>();
         Elements = 0;
         Times = times;
 	for (int t=0; t < times; t++)
@@ -3094,12 +3185,12 @@ public My3DData(Container myapp,int sizex,int sizey, int sizez,
  private void DoProject(int elem, int dim)
  {
     // System.out.println("DoProject, Bundle: "+BundleAt(elem).ProjValid[dim]+", Proj: "+ProjAt(dim,elem).isValid);
-    if (BundleAt(elem).ProjValid[dim] && ProjAt(dim,elem).isValid)  // No need to project, since all projections are still valid
+    if (GetBundleAt(elem).ProjValid[dim] && ProjAt(dim,elem).isValid)  // No need to project, since all projections are still valid
         return;
     // System.out.println("projecting ...");
-    ActProj(dim).setMIPMode(BundleAt(elem).MIPMode);
+    ActProj(dim).setMIPMode(GetBundleAt(elem).MIPMode);
     ProjAt(dim,elem).DoProject(dim,ElementAt(elem),GetGateElem(), ActROI());
-    BundleAt(elem).ProjValid[dim] = true;
+    GetBundleAt(elem).ProjValid[dim] = true;
     MyColorProjection[dim].Invalidate();
  }
 
@@ -3151,7 +3242,7 @@ Image GiveSection(int dim,int pos) {
       }
   else
       {
-        ms.TakeModel(BundleAt(ActiveElement).ElementModel);
+        ms.TakeModel(GetBundleAt(ActiveElement).ElementModel);
         return ms.GenImage(applet);
        }
  }

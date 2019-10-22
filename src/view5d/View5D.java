@@ -138,6 +138,8 @@ public class View5D extends Applet {
                     ((ByteElement) data3d.ElementAt(e,nt)).myData, 0 , SizeX*SizeY*SizeZ);
         }
         mypan.CheckScrollBar();
+        if (aviewer != null)
+            ((ImgPanel) aviewer.mycomponent).CheckScrollBar();
         return this;
     }
     /* The code below is necessary to include the software as a plugin into Matlab and DipImage (Univ. Delft) */
@@ -150,6 +152,8 @@ public class View5D extends Applet {
                     ((ShortElement) data3d.ElementAt(e,nt)).myData, 0 , SizeX*SizeY*SizeZ);
         }
         mypan.CheckScrollBar();
+        if (aviewer != null)
+            ((ImgPanel) aviewer.mycomponent).CheckScrollBar();
         return this;
     }
     /* The code below is necessary to include the software as a plugin into Matlab and DipImage (Univ. Delft) */
@@ -162,6 +166,8 @@ public class View5D extends Applet {
                     ((UnsignedShortElement) data3d.ElementAt(e,nt)).myData, 0 , SizeX*SizeY*SizeZ);
         }
         mypan.CheckScrollBar();
+        if (aviewer != null)
+            ((ImgPanel) aviewer.mycomponent).CheckScrollBar();
         return this;
     }
     /* The code below is necessary to include the software as a plugin into Matlab and DipImage (Univ. Delft) */
@@ -174,6 +180,8 @@ public class View5D extends Applet {
                     ((FloatElement) data3d.ElementAt(e,nt)).myData, 0 , SizeX*SizeY*SizeZ);
         }
         mypan.CheckScrollBar();
+        if (aviewer != null)
+            ((ImgPanel) aviewer.mycomponent).CheckScrollBar();
         return this;
     }
     /* The code below is necessary to include the software as a plugin into Matlab and DipImage (Univ. Delft) */
@@ -186,6 +194,8 @@ public class View5D extends Applet {
                     ((DoubleElement) data3d.ElementAt(e,nt)).myData, 0 , SizeX*SizeY*SizeZ);
         }
         mypan.CheckScrollBar();
+        if (aviewer != null)
+            ((ImgPanel) aviewer.mycomponent).CheckScrollBar();
         return this;
     }
 
@@ -199,6 +209,8 @@ public class View5D extends Applet {
                     ((ComplexElement) data3d.ElementAt(e,nt)).myData, 0 , 2*SizeX*SizeY*SizeZ);
         }
         mypan.CheckScrollBar();
+        if (aviewer != null)
+            ((ImgPanel) aviewer.mycomponent).CheckScrollBar();
         return this;
     }
 
@@ -253,7 +265,11 @@ public class View5D extends Applet {
     }
 
     public void SetElementsLinked(boolean doLink) {
-       data3d.elementsLinked = doLink;
+       data3d.setElementsLinked(doLink);
+    }
+
+    public void setTimesLinked(boolean doLink) {
+        data3d.setTimesLinked(doLink);
     }
 
     public void SetGamma(int e, double gamma) {

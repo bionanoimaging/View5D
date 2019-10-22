@@ -27,6 +27,7 @@ import java.awt.event.*;
 import java.awt.*;
 import java.util.*;
 import java.text.*;
+import javax.swing.JOptionPane;
 
 public class PositionLabel extends Panel implements MouseListener, KeyListener {
     static final long serialVersionUID = 1;
@@ -180,17 +181,26 @@ public class PositionLabel extends Panel implements MouseListener, KeyListener {
     void Help() {
         // javax.swing.JOptionPane.showMessageDialog(applet,
         String newtext = "Java 5D image viewer, Version V" + View5D_.serialVersionUID + "." + View5D_.serialSubVersionUID + "." + View5D_.serialSubSubVersionUID + "" +
-                " by Rainer Heintzmann\nUniversity of Jena, Germany (heintzmann@gmail.com)\n" +
-                "Right-click for menu\nUse mouse click for changing slices, \n" +
-                "Shift and mouse-drag for square ROIs, Ctrl and mouse-drag for multiple line ROIs\ndrag images, zoom by typing 'A' and 'a' or into ROI by 'Z'\n" +
-                "Arrow keys for fine control of slicing position\n" +
-                "'next page' and 'prev. page'  for changing perpendicular slice ,\n'<' and '>' for perpendicular magnificaltion\n" +
+                " by Rainer Heintzmann\nLeibniz-IPHT and Friedrich Schiller University of Jena, Germany (heintzmann@gmail.com)\n\n" +
+                "NAVIGATION: Right-click for menu and context menus\nUse mouse click for changing slices or cursor keys (arrows) and next/previous page keys.\n" +
+                "'e' and 'E' movel along the element- (color-) direction. ',' and '.' along time or between multiple images.\n +" +
+                "'home' positions the cursor in the center.\n" +
+                "shift-drag images for positon or press space bar before draggin with the mouse, zoom by typing 'A' and 'a' or zoom into a ROI by pressing 'Z'\n\n" +
+                "VIEW ADJUSTMENT:'<' and '>' for adjusting display magnificaltion perpendicular to the current display\n" +
                 "'i' for init view, 'c' for change ColorMap, \n" +
-                "1,2,5,6' for lower and '3,4,7,8' for upper Threshold, 't' and 'T' for automatic contrast adjustment using one or all elements\n" +
+                "1,2,5,6' for lower and '3,4,7,8' for upper Threshold coarse and fine adjustment, 't' and 'T' for automatic contrast adjustment using one or all elements\n" +
                 "'e' : toggle elements (if present), 'C' : toggle multicolor display, 'r','g','b' : select element for respective display\n" +
-                "'R','G','B' : clear respective channel, 'p','P': Toggle Projections (MIP, Avg)\n For Documentation see http://www.nanoimaging.de/View5D/";
-        MyText.setText(newtext);
-        MyText.setCaretPosition(0);
+                "'R','G','B' : clear respective channel, 'p','P': Toggle Projections (MIP, Avg)\n\n"+
+                "ROIs: Shift and mouse-drag for square ROIs, 'Ctrl-s' toggles ROI modes mouse-drag for multiple line ROIs\n\n"+
+                "See the context menus (right click) in the main and element displays for more commands with the respective keys shown in []\n" +
+                "For further Documentation see http://www.nanoimaging.de/View5D/";
+        if (false) {
+            MyText.setText(newtext);
+            MyText.setCaretPosition(0);
+        }
+        else
+            JOptionPane.showMessageDialog(null, newtext);
+
     }
 
     void PrintPointList() {
