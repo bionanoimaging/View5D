@@ -84,9 +84,17 @@ public class UnsignedShortElement extends AnElement {
 
     void ConvertSliceFromSimilar(int myslice, int bufslice, Object Ibuffer, int mstep, int moff) {
         // System.out.println("Byte Converting "+SizeXY+"\n");
-        char [] mbuffer = (char []) Ibuffer;
-        for (int i=0;i<SizeXY;i+=mstep)
-            myData[i+Sizes[0]*Sizes[1]*myslice] = mbuffer[bufslice*SizeXY+i+moff];
+        if (Ibuffer instanceof short[]) {
+            short [] mbuffer;
+            mbuffer = (short []) Ibuffer;
+            for (int i=0;i<SizeXY;i+=mstep)
+                myData[i+Sizes[0]*Sizes[1]*myslice] = (char) mbuffer[bufslice*SizeXY+i+moff];
+        } else {
+            char [] mbuffer;
+            mbuffer = (char[]) Ibuffer;
+            for (int i=0;i<SizeXY;i+=mstep)
+                myData[i+Sizes[0]*Sizes[1]*myslice] = mbuffer[bufslice*SizeXY+i+moff];
+        }
     }
 
     void ConvertSliceFromByte(int myslice, int bufslice, byte [] Ibuffer, int mstep, int moff)

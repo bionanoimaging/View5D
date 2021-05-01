@@ -404,8 +404,8 @@ public abstract class AnElement extends Object {
    public int ComputeHistogram(AnElement gate, ROI roi) {  // runs through the given dataset inside the ROI and computes a 3D Histogram
         NameV = "frequency";
         UnitV = "cnts";
-        System.out.println("Computing Histogram with Hscale (X,Y,Z): "+Scales[0]+", "+Scales[1]+", "+Scales[2]+"\n");
-        System.out.println("Offsets: "+Offsets[0]+", "+Offsets[1]+", "+Offsets[2]+"\n");
+        System.out.println("Computing Histogram with Hscale (X,Y,Z): "+Scales[0]+", "+Scales[1]+", "+Scales[2]);
+        System.out.println("Offsets: "+Offsets[0]+", "+Offsets[1]+", "+Offsets[2]);
             
         if (DataToHistogramX == null) {
             System.out.println("Error: No data connected to this histogram");
@@ -463,7 +463,7 @@ public abstract class AnElement extends Object {
                         	SetValueAt(px,py,pz,vali);
                         	if (vali > max) max=vali;
                     }
-        System.out.println("max : "+max+"\n");
+        System.out.println("max : "+max);
         Max = max; Min = 0.0;
         MaxValue = Max; 
         SetScaleShift(0.0,Max);

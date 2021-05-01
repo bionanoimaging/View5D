@@ -63,6 +63,8 @@ public class ImgPanel extends Panel {
                 	if (! ScrollbarPresent) { //
 						// System.out.println("Adding a Scrollbar with "+data3d.Times+" timesteps.\n");
 						Slider=new Scrollbar(Scrollbar.VERTICAL, 0, 1, 0, data3d.Times);
+						Slider.setBackground(new Color(70,70,200)); // Color.BLUE
+						// Slider.setForeground(new Color(255,255,0)); // does not set the foreground but only the border
                     	ScrollbarPresent=true;
 						label.TimeScrollbar = Slider;  // that it will be moved when browsing though the data
 						add("East", Slider);

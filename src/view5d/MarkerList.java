@@ -52,7 +52,7 @@ class MarkerList extends Object {
     	if (NumPoints > 0)
     		{
     		SetColor(Parent.GetPoint(0).mycolor);   // use the color of the parent
-    		System.out.println("Link1To Chose color " + Parent.GetPoint(0).mycolor + "\n");
+    		//System.out.println("Link1To Chose color " + Parent.GetPoint(0).mycolor + "\n");
     		}
     	}
     
@@ -67,7 +67,7 @@ class MarkerList extends Object {
     	if (NumPoints > 0)
     		{
     		SetColor(Parent.GetPoint(0).mycolor);   // use the color of the parent
-    		System.out.println("Link2To Chose color " + Parent.GetPoint(0).mycolor + "\n");
+    		//System.out.println("Link2To Chose color " + Parent.GetPoint(0).mycolor + "\n");
     		}
     	}
     

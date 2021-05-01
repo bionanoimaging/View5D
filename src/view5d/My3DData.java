@@ -304,6 +304,8 @@ public class My3DData extends Object {
        MyColorProjection=null;
        MySlice=null;
        MyColorSlice=null;
+       Elements=-1;
+       Times=-1;
    	   // System.out.println("cleanup\n");
        System.gc();
     }
@@ -2150,7 +2152,13 @@ public class My3DData extends Object {
         {
         for (int t=0;t<Times;t++) {
             DeleteActElement(ElementsAtTime(t));
-            TimesColorInfo.get(t).removeElement(ActiveElement);
+            try {
+                TimesColorInfo.get(t).removeElement(ActiveElement);
+            }
+            catch(Exception e)
+            {
+                // ignore this
+            }
         }
         MyBundle.removeElementAt(ActiveElement);
 

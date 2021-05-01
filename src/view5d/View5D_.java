@@ -35,7 +35,7 @@ import ij.gui.*;
 public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
     public static final long serialVersionUID = 2;
     public static final long serialSubVersionUID = 3;
-    public static final long serialSubSubVersionUID = 0;
+    public static final long serialSubSubVersionUID = 2;
 	// Panel panel;
 	int previousId;
 	ImagePlus imp;
@@ -54,15 +54,18 @@ public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
     }
     
     public void windowClosed(java.awt.event.WindowEvent windowEvent) {
-        setVisible(false);
+
+        // System.out.println("Plugin closed\n");
+        // setVisible(false);
     }
     
     public void windowClosing(java.awt.event.WindowEvent windowEvent) {  
     	// System.out.println("Plugin closing\n");
     	data3d.cleanup();
         removeAll();
-        System.gc();    	
-        setVisible(false);
+        System.gc();
+        dispose();
+        // setVisible(false);
     }
     
     public void windowDeactivated(java.awt.event.WindowEvent windowEvent) {
@@ -175,7 +178,7 @@ public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
      	case ImagePlus.COLOR_256: DataType=AnElement.ByteType;NumBytes=1;NumBits=8;break;    // 8-bit RGB with lookup
      	case ImagePlus.COLOR_RGB: DataType=AnElement.ByteType;NumBytes=1;NumBits=8;Elements=3; break;    // 24-bit RGB 
      	case ImagePlus.GRAY8: DataType=AnElement.ByteType;NumBytes=1;NumBits=8;break;    // 8-bit grayscale
-     	case ImagePlus.GRAY16: DataType=AnElement.ShortType;NumBytes=2;NumBits=16;break;    // 16-bit grayscale
+     	case ImagePlus.GRAY16: DataType=AnElement.UnsignedShortType;NumBytes=2;NumBits=16;break;    // 16-bit grayscale
      	case ImagePlus.GRAY32: DataType=AnElement.FloatType;NumBytes=4;NumBits=32;break;    // float image
      	}
 
@@ -386,7 +389,6 @@ public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
 		setMenuBar(mypan.MyMenu);
 		// setVisible(true);
 
-
 		// data3d.initThresh();
 		mypan.InitScaling();
 		addWindowListener(this);
@@ -394,6 +396,9 @@ public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
 		GUI.center(this);
 		//show();
 		setVisible(true);
+        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+		setSize((int) (size.getWidth()/2),(int) (size.getHeight()/1.5)); // Heuristics
+		repaint();
     }
 
     public ImagePlus GetImp() { return imp;}

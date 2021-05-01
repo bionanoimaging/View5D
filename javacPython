@@ -10,8 +10,13 @@ javac -target 1.6 -source 1.6 -deprecation -classpath ".:/usr/local/ImageJ/ij.ja
 # javac -deprecation -classpath "." View5D_.java
 jar -cf View5D_.jar view5d/*.class plugins.config
 cp View5D_.jar ../../../PythonScripts/FromWeb/nanoimagingpack/NanoImagingPack/resources/
-cp View5D_.jar "/mnt/c/NoBackup/DeconvCompileTest/Toolboxes/DIPimage 2.9/common/dipimage/private/View5D.jar"
+cp View5D_.jar "/mnt/c/NoBackup/DeconvCompileTest/DIPlib_3_2017/share/DIPimage/private/View5D.jar"
+cp View5D_.jar "/mnt/c/NoBackup/DeconvCompileTest/DIPlib_3_2019/share/DIPimage/private/View5D.jar"
 cp View5D_.jar "../View5D.jar"
+cp View5D_.jar "/mnt/c/Users/pi96doc/.julia/artifacts/View5D.jar"
+cd ..
+cp View5D.jar "View5D_v2.3.2.jar"
+tar -czf "View5D_v2.3.2-jar.tar.gz" "View5D_v2.3.2.jar"
 # cp /*.class /usr/local/ImageJ/plugins/View5D/
 #cp View5D_.jar /usr/local/ImageJ/plugins/View5D/
 # cp View5D_.jar /windows/C/DriveF/JavaProgs/ImageJ/plugins/View5D/

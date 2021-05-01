@@ -36,10 +36,12 @@ public class AlternateViewer extends Frame implements WindowListener {
     public AlternateViewer(Container myapplet) {
     super("Alternate Viewer");
     applet = myapplet;
-    if (myapplet != null)
-        setSize(myapplet.getBounds().width,myapplet.getBounds().height);
-    else
-        setSize(500,500);
+    //if (myapplet != null)
+    //    setSize(myapplet.getBounds().width,myapplet.getBounds().height);
+    //else
+     Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+     setSize((int) (size.getWidth()/2),(int) (size.getHeight()/1.5)); // Heuristics
+    // setSize(500,500);
     setVisible(true);
     addWindowListener(this); // register this class for handling the events in it
     }
@@ -77,14 +79,19 @@ public class AlternateViewer extends Frame implements WindowListener {
     }
     
     public void windowClosed(java.awt.event.WindowEvent windowEvent) {
-        cloned=null;
+        cloned=null; // This deletes the data
     if (!(applet instanceof View5D))
 	   ((View5D_) applet).panels.removeElement(mycomponent);  // remove this view from the list
     else
 	   ((View5D) applet).panels.removeElement(mycomponent);  // remove this view from the list
+    if (applet instanceof View5D) {
+            ((View5D) applet).Elements = -1;
+            ((View5D) applet).Times = -1;
+        }
+
     }
     
-    public void windowClosing(java.awt.event.WindowEvent windowEvent) {  // Put the window back into place
+    public void windowClosing(java.awt.event.WindowEvent windowEvent) {
     if (mycomponent instanceof PixelDisplay)
     {
         ((PixelDisplay) mycomponent).c1.myPanel.label.add(mycomponent);
@@ -100,6 +107,11 @@ public class AlternateViewer extends Frame implements WindowListener {
         {
             if (cloned.DataToHistogram.MyHistogram == cloned)
                     cloned.DataToHistogram.MyHistogram = null;
+        }
+    else {
+            if (applet instanceof View5D) {
+                ((View5D) applet).closeAll();
+            }
         }
     setVisible(false);
     }

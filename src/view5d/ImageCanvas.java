@@ -1368,7 +1368,7 @@ public void keyPressed(KeyEvent e) {
     }
     else
     	ProcessKey(myChar);
-    if (myChar != '?')
+    if (myChar != '?' && myChar != '$')
     	UpdateAll();
     return;
 }
@@ -1428,12 +1428,12 @@ void SpawnHistogram(boolean forceHistogram)
                 {
                     Scales[1] = ((int) ((HRangeY-1)/MaxSize) + 1);
                     HBinsY = (int) (HRangeY / Scales[1]);
-                    System.out.println("Y Histscale : "+ HBinsY+ ", " + Scales[1]+"\n");
+                    System.out.println("Y Histscale : "+ HBinsY+ ", " + Scales[1]);
                 }
                 else
                 {
                     HBinsY = MaxSize; Scales[1] = HRangeY / (HBinsY-1.0);
-                    System.out.println("::: Y Histscale : "+ HBinsY+ ", "+ HRangeY + ", " + Scales[1]+"\n");
+                    System.out.println("::: Y Histscale : "+ HBinsY+ ", "+ HRangeY + ", " + Scales[1]);
                 }
                 Offsets[1] = my3ddata.GetScaledMincs(my3ddata.HistoY);
             }
@@ -1478,7 +1478,6 @@ void SpawnHistogram(boolean forceHistogram)
             // xx2.invalidate();
             // xx2.repaint();
             // xx2.setEnabled(true);
-            // What to do to make this window visible without a resize by the user???
             }
             else  // 'h' was pressed in data (not in histogram)
             {
@@ -1565,7 +1564,7 @@ public void ProcessKey(char myChar) {
         my3ddata.AdjustThresh();
 	    UpdateAll();
 	return ;
-    case 'n':  // 
+    case 'n':  //
         my3ddata.MarkerDialog();
 	// my3ddata.ToggleConnection(-1);
 	UpdateAll();
@@ -1637,7 +1636,7 @@ public void ProcessKey(char myChar) {
 	return;
     case '&':  // remove this active point
 	my3ddata.TagMarker();  // Toggles Marker Tag
-	System.out.println("Error Tagged Component setValue called\n"); 
+	System.out.println("Error Tagged Component setValue called\n");
 	UpdateAll();
 	return;
     case 'm':  // Set marker
@@ -1646,7 +1645,7 @@ public void ProcessKey(char myChar) {
 		{myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();}
 	if (my3ddata.Advance)
 		myPanel.AdvancePos();
-	// System.out.println("should have advanced" + my3ddata.Advance); 
+	// System.out.println("should have advanced" + my3ddata.Advance);
 	// my3ddata.AddPoint(label.px,label.py,label.pz);
 	UpdateAll();
 	return;
@@ -1659,18 +1658,32 @@ public void ProcessKey(char myChar) {
     case '$':  // time to say goodbye
         // java.lang.System.exit(0);   // exit the application by ending the java virtual mashine
         // close the main window and free as much memory as possible
+	if (!(applet instanceof View5D))  { // This is ImageJ specific
         my3ddata.cleanup();
         applet.removeAll();
         otherCanvas1.removeNotify();
         otherCanvas2.removeNotify();
         this.removeNotify();
         System.gc();
-	if (!(applet instanceof View5D))  // This is ImageJ specific
-            ((View5D_) applet).dispose();
-        else
+        ((View5D_) applet).dispose();
+	    }
+        else  // when called from Matlab, Python and Julia
         {
-            ((View5D) applet).stop();            
-            ((View5D) applet).destroy();
+            Frame viewer = ((View5D) applet).aviewer;
+            for (int i=0;i<((View5D) applet).panels.size();i++) {
+                Object otherviewer = (((View5D) applet).panels.elementAt(i).getParent());
+                if ((otherviewer instanceof Frame) && (viewer != otherviewer)) {
+                    WindowEvent closingEvent = new WindowEvent((Frame) otherviewer, WindowEvent.WINDOW_CLOSING);
+                    Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(closingEvent);
+                }
+            }
+            WindowEvent closingEvent = new WindowEvent(viewer, WindowEvent.WINDOW_CLOSING);
+            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(closingEvent);
+
+            // ((View5D) applet).aviewer.dispose(); // just closes teh window but does NOT free the memory!
+            //((View5D) applet).closeAll();
+            //((View5D) applet).stop();
+            //((View5D) applet).destroy();
         }
         return;
    case 'Q':  // remove all point to the end of the list
