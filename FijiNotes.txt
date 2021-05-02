@@ -1,0 +1,3 @@
+This branch resides on Rainer Heintzmann's personal GitHub folder under GPL-2 License.
+The Fiji-branch is has different Travis etc development files and a modified copyright notice, but the Java code is (so far) a verbal copy of this code with modified (Fiji) copyrights.
+
