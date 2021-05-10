@@ -26,10 +26,11 @@ import java.applet.Applet;
 import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
+import java.net.*;
 // import view5d.*;
 
 // insert : "public" before this to make it an applet
-public class View5D extends Applet {
+public class View5D extends Applet{  // can also be: Container  (but then without the applet functionality)
     // NOTE: Window events are handles in "AlternateViewer.java"
   static final long serialVersionUID = 2;  // Just to fulfil the requirement. Is not used. Look at View5D_.java
   public int SizeX=0,SizeY=0,SizeZ=0,Elements=1,Times=1;
@@ -42,6 +43,17 @@ public class View5D extends Applet {
   Vector<ImgPanel> panels=new Vector<ImgPanel>();  // Keeps track of all the views. Sometimes this information is needed to send the updates.
   
   public String filename=null;
+
+  public static Dimension getScreenSize() {
+        Dimension size;
+        try {
+            size = Toolkit.getDefaultToolkit().getScreenSize();
+        }
+        catch(Exception e) {
+            size = new Dimension(640, 480);  // needed for example for headless mode
+        }
+        return size;
+    }
 
     public void UpdatePanels()  // update all panels
         {
@@ -133,7 +145,7 @@ public class View5D extends Applet {
     public View5D AddTime(byte [] myarray, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {
         int DataType=AnElement.ByteType, NumBytes=1, NumBits=8;
         int nt=data3d.GenerateNewTime(DataType,NumBytes,NumBits,data3d.GetScale(data3d.ActiveElement),
-                data3d.GetOffset(data3d.ActiveElement),1.0,0.0,data3d.GetAxisNames(),data3d.GetAxisUnits());
+                data3d.GetOffset(data3d.ActiveElement),1.0,0.0,data3d.GetAxisNames(),data3d.GetAxisUnits(),Elements);
         for (int e=0;e<Elements;e++) {
             System.arraycopy( myarray, e*SizeX*SizeY*SizeZ,
                     ((ByteElement) data3d.ElementAt(e,nt)).myData, 0 , SizeX*SizeY*SizeZ);
@@ -147,7 +159,7 @@ public class View5D extends Applet {
     public View5D AddTime(short [] myarray, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {
         int DataType=AnElement.ShortType, NumBytes=2, NumBits=16;
         int nt=data3d.GenerateNewTime(DataType,NumBytes,NumBits,data3d.GetScale(data3d.ActiveElement),
-                data3d.GetOffset(data3d.ActiveElement),1.0,0.0,data3d.GetAxisNames(),data3d.GetAxisUnits());
+                data3d.GetOffset(data3d.ActiveElement),1.0,0.0,data3d.GetAxisNames(),data3d.GetAxisUnits(),Elements);
         for (int e=0;e<Elements;e++) {
             System.arraycopy( myarray, e*SizeX*SizeY*SizeZ,
                     ((ShortElement) data3d.ElementAt(e,nt)).myData, 0 , SizeX*SizeY*SizeZ);
@@ -161,7 +173,7 @@ public class View5D extends Applet {
     public View5D AddTime(char [] myarray, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {
         int DataType=AnElement.UnsignedShortType, NumBytes=1, NumBits=8;
         int nt=data3d.GenerateNewTime(DataType,NumBytes,NumBits,data3d.GetScale(data3d.ActiveElement),
-                data3d.GetOffset(data3d.ActiveElement),1.0,0.0,data3d.GetAxisNames(),data3d.GetAxisUnits());
+                data3d.GetOffset(data3d.ActiveElement),1.0,0.0,data3d.GetAxisNames(),data3d.GetAxisUnits(),Elements);
         for (int e=0;e<Elements;e++) {
             System.arraycopy( myarray, e*SizeX*SizeY*SizeZ,
                     ((UnsignedShortElement) data3d.ElementAt(e,nt)).myData, 0 , SizeX*SizeY*SizeZ);
@@ -175,7 +187,7 @@ public class View5D extends Applet {
     public View5D AddTime(float [] myarray, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {
         int DataType=AnElement.FloatType, NumBytes=4, NumBits=32;
         int nt=data3d.GenerateNewTime(DataType,NumBytes,NumBits,data3d.GetScale(data3d.ActiveElement),
-                data3d.GetOffset(data3d.ActiveElement),1.0,0.0,data3d.GetAxisNames(),data3d.GetAxisUnits());
+                data3d.GetOffset(data3d.ActiveElement),1.0,0.0,data3d.GetAxisNames(),data3d.GetAxisUnits(),Elements);
         for (int e=0;e<Elements;e++) {
             System.arraycopy( myarray, e*SizeX*SizeY*SizeZ,
                     ((FloatElement) data3d.ElementAt(e,nt)).myData, 0 , SizeX*SizeY*SizeZ);
@@ -189,7 +201,7 @@ public class View5D extends Applet {
     public View5D AddTime(double [] myarray, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {
         int DataType=AnElement.DoubleType, NumBytes=8, NumBits=64;
         int nt=data3d.GenerateNewTime(DataType,NumBytes,NumBits,data3d.GetScale(data3d.ActiveElement),
-                data3d.GetOffset(data3d.ActiveElement),1.0,0.0,data3d.GetAxisNames(),data3d.GetAxisUnits());
+                data3d.GetOffset(data3d.ActiveElement),1.0,0.0,data3d.GetAxisNames(),data3d.GetAxisUnits(),Elements);
         for (int e=0;e<Elements;e++) {
             System.arraycopy( myarray, e*SizeX*SizeY*SizeZ,
                     ((DoubleElement) data3d.ElementAt(e,nt)).myData, 0 , SizeX*SizeY*SizeZ);
@@ -204,7 +216,7 @@ public class View5D extends Applet {
     public View5D AddTimeC(float [] myarray, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {
         int DataType=AnElement.ComplexType, NumBytes=8, NumBits=64;
         int nt=data3d.GenerateNewTime(DataType,NumBytes,NumBits,data3d.GetScale(data3d.ActiveElement),
-                data3d.GetOffset(data3d.ActiveElement),1.0,0.0,data3d.GetAxisNames(),data3d.GetAxisUnits());
+                data3d.GetOffset(data3d.ActiveElement),1.0,0.0,data3d.GetAxisNames(),data3d.GetAxisUnits(),Elements);
         for (int e=0;e<Elements;e++) {
             System.arraycopy( myarray, 2*e*SizeX*SizeY*SizeZ,
                     ((ComplexElement) data3d.ElementAt(e,nt)).myData, 0 , 2*SizeX*SizeY*SizeZ);
@@ -286,12 +298,12 @@ public class View5D extends Applet {
     }
     /* Just an alias for backward compatibility calling without viewer sizes */
     public static View5D Start5DViewer(byte [] array, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = getScreenSize();
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times,(int) (size.getWidth()/2),(int) (size.getHeight()/1.5));
     }
 
     public static View5D Start5DViewerB(byte [] array, int SizeX, int SizeY, int SizeZ,int Elements,int Times) { // This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = getScreenSize();
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, (int) (size.getWidth()/2),(int) (size.getHeight()/1.5)); // This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
     }
 
@@ -379,7 +391,7 @@ public class View5D extends Applet {
     /* The code below is necessary to include the software as a plugin into Matlab and DipImage (Univ. Delft) */
    public static View5D Start5DViewer(short [] sarray, int SizeX, int SizeY, int SizeZ,int Elements,int Times, int AX, int AY) {
         int DataType=AnElement.ShortType, NumBytes=2, NumBits=8;
-        System.out.println("viewer invoked (short datatype)");
+        // System.out.println("viewer invoked (short datatype)");
         View5D anApplet=Prepare5DViewer(SizeX,SizeY,SizeZ,Elements,Times,DataType,NumBytes,NumBits);
         ((ShortElement) anApplet.data3d.ActElement()).myData= sarray; // new byte[SizeX*SizeY*SizeZ];
    	    anApplet.data3d.ToggleOverlayDispl(1);
@@ -402,19 +414,19 @@ public class View5D extends Applet {
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, AX, AY);
     }
     public static View5D Start5DViewerS(short [] array, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {// This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = getScreenSize();
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, (int) (size.getWidth()/2),(int) (size.getHeight()/1.5));// This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
     }
     /* Just an alias for backward compatibility calling without viewer sizes */
     public static View5D Start5DViewer(short [] array, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = getScreenSize();
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, (int) (size.getWidth()/2),(int) (size.getHeight()/1.5));
     }
 
     /* The code below is necessary to include the software as a plugin into Matlab and DipImage (Univ. Delft) */
     public static View5D Start5DViewer(char [] sarray, int SizeX, int SizeY, int SizeZ,int Elements,int Times, int AX, int AY) {
         int DataType=AnElement.UnsignedShortType, NumBytes=2, NumBits=16;
-        System.out.println("viewer invoked (unsigned short datatype)");
+        // System.out.println("viewer invoked (unsigned short datatype)");
         View5D anApplet=Prepare5DViewer(SizeX,SizeY,SizeZ,Elements,Times,DataType,NumBytes,NumBits);
         ((UnsignedShortElement) anApplet.data3d.ActElement()).myData= sarray; // new byte[SizeX*SizeY*SizeZ];
         anApplet.data3d.ToggleOverlayDispl(1);
@@ -437,12 +449,12 @@ public class View5D extends Applet {
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times,AY,AX);
     }
     public static View5D Start5DViewerUS(char [] array, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {// This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = getScreenSize();
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times,(int) (size.getWidth()/2),(int) (size.getHeight()/1.5));// This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
     }
     /* Just an alias for backward compatibility calling without viewer sizes */
     public static View5D Start5DViewer(char [] array, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = getScreenSize();
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, (int) (size.getWidth()/2),(int) (size.getHeight()/1.5));
     }
 
@@ -469,12 +481,12 @@ public class View5D extends Applet {
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, AX, AY);
     }
     public static View5D Start5DViewerF(float [] array, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {// This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = getScreenSize();
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, (int) (size.getWidth()/2),(int) (size.getHeight()/1.5));// This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
     }
     /* Just an alias for backward compatibility calling without viewer sizes */
     public static View5D Start5DViewer(float [] array, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size =getScreenSize();
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, (int) (size.getWidth()/2),(int) (size.getHeight()/1.5));
     }
 
@@ -497,7 +509,7 @@ public class View5D extends Applet {
         return anApplet;
    }
     public static View5D Start5DViewerC(float [] carray, int SizeX, int SizeY, int SizeZ,int Elements,int Times) { // This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = getScreenSize();
         return Start5DViewerC(carray, SizeX, SizeY, SizeZ,Elements,Times, (int) (size.getWidth()/2),(int) (size.getHeight()/1.5)); // This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
     }
 
@@ -524,20 +536,21 @@ public class View5D extends Applet {
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, AX, AY);
     }
     public static View5D Start5DViewerD(double [] array, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {// This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = getScreenSize();
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, (int) (size.getWidth()/2),(int) (size.getHeight()/1.5));// This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
     }
     /* Just an alias for backward compatibility calling without viewer sizes */
     public static View5D Start5DViewer(double [] array, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = getScreenSize();
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, (int) (size.getWidth()/2),(int) (size.getHeight()/1.5));
     }
+
 
 
     /* The code below is necessary to include the software as a plugin into Mathlab and DipImage (Univ. Delft) */
    public static View5D Start5DViewer(int [] iarray, int SizeX, int SizeY, int SizeZ,int Elements,int Times, int AX, int AY) {
         int DataType=AnElement.IntegerType, NumBytes=4, NumBits=32;
-        System.out.println("viewer invoked (int datatype)");
+        // System.out.println("viewer invoked (int datatype)");
         View5D anApplet=Prepare5DViewer(SizeX,SizeY,SizeZ,Elements,Times,DataType,NumBytes,NumBits);
         ((IntegerElement) anApplet.data3d.ActElement()).myData= iarray; // new byte[SizeX*SizeY*SizeZ];
 	anApplet.data3d.ToggleOverlayDispl(1);
@@ -558,12 +571,12 @@ public class View5D extends Applet {
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, AX, AY);
     }
     public static View5D Start5DViewerI(int [] array, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {// This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = getScreenSize();
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, (int) (size.getWidth()/2),(int) (size.getHeight()/1.5));// This is unfortunately NECESSARY due to a limited argument length of javabringe in Python
     }
     /* Just an alias for backward compatibility calling without viewer sizes */
     public static View5D Start5DViewer(int [] array, int SizeX, int SizeY, int SizeZ,int Elements,int Times) {
-        Dimension size = Toolkit.getDefaultToolkit().getScreenSize();
+        Dimension size = getScreenSize();
         return Start5DViewer(array,SizeX,SizeY,SizeZ,Elements,Times, (int) (size.getWidth()/2),(int) (size.getHeight()/1.5));
     }
 
@@ -763,8 +776,12 @@ public class View5D extends Applet {
             }
         }); */
         return anApplet;
-    }                
-  
+    }
+
+
+  //   The stuff below relies heavily on this class being a decendent of Applet. It can be removed and the View5D class be extending Container
+  // see also: https://www.oracle.com/technetwork/java/javase/migratingfromapplets-2872444.pdf
+
   // Container ExtraWindows;
   int ParseInt(String s, boolean dowarn, int adefault) {  // a version of ParseInt, which performs a check only if required
     int result;
@@ -816,6 +833,7 @@ public class View5D extends Applet {
         
     return result;
   }
+  // stop commenting here
 
   public String StringFromType(int TypeNr)
   {
@@ -860,7 +878,10 @@ public class View5D extends Applet {
                 
         setVisible(true);
   }
-  
+
+  //   The stuff below relies heavily on this class being a decendent of Applet. It is removed for now, as applets are deprecated
+  // This can be commented out and the View5D class can be changed to Component
+  // see also: https://www.oracle.com/technetwork/java/javase/migratingfromapplets-2872444.pdf
   public void init() {
 	 if (System.getProperty("java.version").compareTo("1.4") < 0)  // this viewer should work from version 1.4 on
 	     {
@@ -1004,8 +1025,8 @@ public class View5D extends Applet {
                     UnitV = ParseString("unitsv"+(e+1),false,"a.u."); 
                     data3d.SetValueScale(e,ScaleV,OffsetV,NameV,UnitV);
                 }
-                
-		data3d.Load(DataType,NumBytes,NumBits,filename,this);
+
+            data3d.Load(DataType,NumBytes,NumBits,this.getDocumentBase() + filename);  // "file://"+filename
 
 		String MyMarkerIn = getParameter("markerInFile");
 		if (MyMarkerIn != null) 
@@ -1036,6 +1057,7 @@ public class View5D extends Applet {
                 }                
 	    }
     }
+    // here you should end the commend, when removing the applet-dependent functions
 
     public void setElement(int e) {
        if (e<0) {
@@ -1055,16 +1077,29 @@ public class View5D extends Applet {
     public void setPosition(int x, int y, int z, int e, int t) {
         //mypan.RememberOffset(); // panels.elementAt(0)
         //mypan.AdjustOffset();
-        mypan.c1.PositionValue = x;
-        mypan.c2.PositionValue = y;
-        mypan.c3.PositionValue = z;
+        //mypan.c1.PositionValue = z;
+        //mypan.c2.PositionValue = x;
+        //mypan.c3.PositionValue = y;
         setElement(e);
         setTime(t);
-        // mypan.setPositions(new APoint(x,y,z,e,t));
-        mypan.c1.label.CoordsChanged();
-        //mypan.c1.CalcPrev();
-        //mypan.c1.label.CoordsChanged();
-        mypan.c1.UpdateAll();
+        // for some reason "mypanel" does not do the trick, but the panel list "panels" works fine.
+        for (int i=0;i<panels.size();i++) { // panels.size()
+            ImgPanel pan = ((ImgPanel) panels.elementAt(i)); // .c1.UpdateAllNoCoord();
+            //System.out.println("current position: " + pan.c1.PositionValue + ", " + pan.c2.PositionValue + ", " + pan.c3.PositionValue);
+
+            pan.setPositions(new APoint(x, y, z, e, t));
+            //System.out.println("Parameters ARE: " + x + ", " + y + ", " + z + ", " + e + ", " + t);
+
+            // data3d.InvalidateSlices();
+            pan.c1.label.CoordsChanged();
+            //System.out.println("Parameters ARE: " + pan.c1.PositionValue + ", " + mypan.c2.PositionValue + ", " + mypan.c3.PositionValue);
+            pan.c1.CalcPrev();
+            pan.c1.label.CoordsChanged();
+            pan.c1.UpdateAll();
+        }
+        // mypan.c1.repaint();
+        // mypan.c2.repaint();
+        // mypan.c3.repaint();
     }
 
     public void start() {

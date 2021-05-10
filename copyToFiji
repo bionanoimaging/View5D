@@ -23,4 +23,5 @@ echo "/*-
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  * #L%
  */" |cat - "$f" > "/tmp/$f"; done
-# cp /tmp/*.java  ../Fiji/View5D/src/main/java/view5d/
+cp /tmp/*.java  ~/Documents/Programming/Java/Fiji/View5D/src/main/java/view5d/ 
+rm /tmp/*.java

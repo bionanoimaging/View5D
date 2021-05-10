@@ -29,6 +29,7 @@ import java.awt.*;
 import java.util.*;
 import java.text.*;
 import ij.gui.*;  // for export of plotwindow
+import java.net.*;
 
 // a canvas represents one view of the data
 public class ImageCanvas extends Canvas implements ImageObserver,MouseListener,MouseMotionListener,KeyListener,FocusListener,AdjustmentListener {
@@ -472,7 +473,7 @@ public void paint(Graphics g) {
 	int yOff = otherCanvas2.PixelFromDataPos(my3ddata.ElementAt(my3ddata.GetActiveElement()).DisplayOffset[otherCanvas2.DimNr]);
 	//int xOff = otherCanvas1.dadd+xDOff;
 	//int yOff = otherCanvas2.dadd+yDOff;
-	// System.out.println("paint xyOff"+xOff+", "+yOff+"\n");
+	//System.out.println("paint xyOff"+xOff+", "+yOff+"\n");
 	
 	g.drawImage(curimage, xOff, yOff , xm, ym, this);
     g.setFont(new Font(my3ddata.FontType, Font.PLAIN, my3ddata.FontSize));
@@ -579,6 +580,8 @@ public void paint(Graphics g) {
         int pz = (int) (myPanel.c1.PositionValue); // Get the absolute z-position
         int element = (int) my3ddata.ActiveElement; // Get the active time
         int time = (int) my3ddata.ActiveTime; // Get the active time
+        // System.out.println("Canvas pos: " + px+", "+py+", "+pz+", "+element+", "+time);
+
         int ActPosition[] = {px,py,pz,element,time};
         NumberFormat nf2 = java.text.NumberFormat.getNumberInstance(Locale.US);
     	nf2.setMaximumFractionDigits(4);
@@ -2050,9 +2053,10 @@ public void ProcessKey(char myChar) {
     case 'l':
 	if (!(applet instanceof View5D))
 	   ((View5D_) applet).LoadImg(0);  
-	else
-	   my3ddata.Load(my3ddata.PrevType,my3ddata.PrevBytes,my3ddata.PrevBits,((View5D) applet).filename,((View5D) applet));   // commented out for now, since the document base is unknown for non-applets
+	else {
+        my3ddata.Load(my3ddata.PrevType, my3ddata.PrevBytes, my3ddata.PrevBits, ((View5D) applet).getDocumentBase() + ((View5D) applet).filename);   //  ((View5D) applet)   commented out for now, since the document base is unknown for non-applets
         UpdateAllPanels();
+    }
 	UpdateAll();  // To display mask
 	return;
     case 'L':

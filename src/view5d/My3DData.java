@@ -1519,12 +1519,17 @@ public class My3DData extends Object {
 
    public double GetScale(int elem,int dim) {
       // System.out.println("GetScale " + elem + " dim " + dim+ " Val "+ElementAt(elem).Scales[dim]);
-      return ElementAt(elem).Scales[dim];
+       //try {
+        return ElementAt(elem).Scales[dim];
+       //}
+       //catch (ArrayIndexOutOfBoundsException exept) {
+       //    return 1.0;
+       //}
    }
 
    public double[] GetScale(int elem) {
       // System.out.println("GetScale " + elem + " dim " + dim+ " Val "+ElementAt(elem).Scales[dim]);
-      return ElementAt(elem).Scales;
+       return ElementAt(elem).Scales;
    }
 
    public double GetOffset(int elem,int dim) {
@@ -1951,27 +1956,34 @@ public class My3DData extends Object {
         for (int t=0;t<Times;t++)
             CloneElement((AnElement) ElementsAtTime(t).lastElement());
     }
+
+    private AnElement new_element(int DataType, int NumBytes, int NumBits) {
+        AnElement ne=null;
+        double MaxValue=(2<<(NumBits-1))-1;
+        if (DataType == AnElement.IntegerType)
+            ne=new IntegerElement(SizeX,SizeY,SizeZ,NumBytes,MaxValue);
+        if (DataType == AnElement.FloatType)
+            ne=new FloatElement(SizeX,SizeY,SizeZ,(float) 1000);
+        if (DataType == AnElement.DoubleType)
+            ne=new DoubleElement(SizeX,SizeY,SizeZ,(double) 1000);
+        if (DataType == AnElement.ComplexType)
+            ne=new ComplexElement(SizeX,SizeY,SizeZ,(float) 1000);
+        if (DataType == AnElement.ByteType)
+            ne=new ByteElement(SizeX,SizeY,SizeZ);
+        if (DataType == AnElement.ShortType)
+            ne=new ShortElement(SizeX,SizeY,SizeZ);
+        if (DataType == AnElement.UnsignedShortType)
+            ne=new UnsignedShortElement(SizeX,SizeY,SizeZ);
+        return ne;
+    }
+
+    //public changeElementDatatype(int element, int time, DataType, int NumBytes, int NumBits) {
+    //}
     
     private AnElement GNE(int DataType, int NumBytes, int NumBits, Vector<AnElement> ElementList, Vector<ASlice> ProjList[])  // just generate the element, not the bundle
     {
-        double MaxValue=(2<<(NumBits-1))-1;
         // System.out.println("Sizes: "+SizeX+", "+SizeY+", "+SizeZ+ ", MaxValue : :"+MaxValue);
-
-        AnElement ne=null;
-        if (DataType == AnElement.IntegerType)
-           ne=new IntegerElement(SizeX,SizeY,SizeZ,NumBytes,MaxValue);
-        if (DataType == AnElement.FloatType)
-           ne=new FloatElement(SizeX,SizeY,SizeZ,(float) 1000);
-        if (DataType == AnElement.DoubleType)
-           ne=new DoubleElement(SizeX,SizeY,SizeZ,(double) 1000);
-        if (DataType == AnElement.ComplexType)
-           ne=new ComplexElement(SizeX,SizeY,SizeZ,(float) 1000);
-        if (DataType == AnElement.ByteType)
-           ne=new ByteElement(SizeX,SizeY,SizeZ);
-        if (DataType == AnElement.ShortType)
-           ne=new ShortElement(SizeX,SizeY,SizeZ);
-        if (DataType == AnElement.UnsignedShortType)
-            ne=new UnsignedShortElement(SizeX,SizeY,SizeZ);
+        AnElement ne = new_element(DataType, NumBytes, NumBits);
         ElementList.addElement(ne);
         ProjList[0].addElement(new ASlice(0,ne));
         ProjList[1].addElement(new ASlice(1,ne));
@@ -2040,33 +2052,50 @@ public class My3DData extends Object {
     @SuppressWarnings("unchecked")
 	public int GenerateNewTime(int DataType, int NumBytes, int NumBits, double[] Scales,
             double[] Offsets, double ScaleV, double OffsetV, 
-           String [] Names, String [] Units)
+           String [] Names, String [] Units, int NewElements)
 		{
 		int ne=0;
-
-		MyElements = new Vector<AnElement>();   // A list of elements is generated for each timepoint
-        MyTimes.addElement(MyElements);  // However, all times use the same list of elements.
+		ActiveTime=0;
+		Vector<AnElement>  newElements = new Vector<AnElement>();   // A list of elements is generated for each timepoint
         MyProjections = (Vector<ASlice>[]) new Vector[3];    // these manage RGB projections
         MyProjections[0] = new Vector<ASlice>();
         MyProjections[1] = new Vector<ASlice>();
         MyProjections[2] = new Vector<ASlice>();
-        MyTimeProj.addElement(MyProjections);
-		
-		ActiveTime=Times;
-		Times ++;
-		for (int e=0;e<Elements;e++)
-		ne=GenerateNewElement(DataType, NumBytes, NumBits, Scales, 
-		            Offsets, ScaleV, OffsetV, Names, Units,
-		            ElementsAtTime(Times-1),ProjsAtTime(Times-1));   // append the required number of elements
+
+		for (int e=0;e<NewElements;e++) { // These are generated with the new datatype
+            //System.out.println("Generated element " + e + " out of " + Elements + " Elements\n");
+            ne = GenerateNewElement(DataType, NumBytes, NumBits, Scales,
+                    Offsets, ScaleV, OffsetV, Names, Units,
+                    newElements, MyProjections);   // append the required number of elements
+        }
+        for (int e=NewElements;e<Elements;e++) { // these are copying the existing datatype
+            //System.out.println("Nonstandard generated element " + e + " out of " + Elements + " Elements\n");
+            AnElement ref_el = ElementAt(e);  // ,Times-1
+            int nb = 4; // is ignored
+            int nbits = 64; // is ignored
+            if (ref_el instanceof IntegerElement)
+                    nb = ((IntegerElement) ref_el).NumBytes;
+
+            ne = GenerateNewElement(ref_el.DataType, nb, nbits,
+                    Scales, Offsets, ScaleV, OffsetV,  // getScale(e), getOffset(e),GetValueScale(e), GetValueOffset(e),
+                    Names, Units,
+                    newElements, MyProjections);   // append the required number of elements
+        }
 
 		MyColorProjection = new ASlice[3];    // this manages color projections
-        MyColorProjection[0]=new ASlice(0,(AnElement) ElementsAtTime(Times-1).firstElement());
-        MyColorProjection[1]=new ASlice(1,(AnElement) ElementsAtTime(Times-1).firstElement());
-        MyColorProjection[2]=new ASlice(2,(AnElement) ElementsAtTime(Times-1).firstElement());
-        MyTimeColorProj.addElement(MyColorProjection);
-	    //System.out.println("Generated New Time\n");
+        MyColorProjection[0]=new ASlice(0,(AnElement) newElements.firstElement());  // ElementsAtTime(Times-1)
+        MyColorProjection[1]=new ASlice(1,(AnElement) newElements.firstElement()); // ElementsAtTime(Times-1)
+        MyColorProjection[2]=new ASlice(2,(AnElement) newElements.firstElement()); //ElementsAtTime(Times-1)
+	    //System.out.println("Generated New Time 1\n");
+	    Times ++;
       	sizes[3]=Elements;
      	sizes[4]=Times;
+        MyTimeProj.addElement(MyProjections);
+        MyTimeColorProj.addElement(MyColorProjection);
+        MyTimes.addElement(newElements);  // However, all times use the same list of elements.
+     	ActiveTime=Times-1;
+        MyElements = ElementsAtTime(ActiveTime);
+        //System.out.println("Generated New Time 2\n");
 		return Times-1;
 		}
 
@@ -2202,7 +2231,14 @@ public class My3DData extends Object {
     }
 
     public double NormedValueAt(int x, int y, int z, int e) {  // will return the log-value if Logscale is on
-        double val= ElementAt(e).GetRawValueAtOffset(x,y,z,ElementAt(ActiveElement));
+        // System.out.println("Normed Value Problem "+e+", ActiveElement: "+ActiveElement+"\n");
+        double val=0.0;
+        try {
+            val = ElementAt(e).GetRawValueAtOffset(x, y, z, ElementAt(ActiveElement));
+        }
+        catch (ArrayIndexOutOfBoundsException exept) {
+            return 0.0;
+        }
         double min=GetMinThresh(e);
         double max=GetMaxThresh(e);
         double Gamma=GetBundleAt(e).Gamma;
@@ -2817,15 +2853,14 @@ public class My3DData extends Object {
 	    }
 }
     
-    
-    public void Load(int DataType, int NumBytes, int NumBits, String filename, Applet rapplet) { 
+    public void Load(int DataType, int NumBytes, int NumBits, String URLname) { // Applet rapplet
 	try {
-	    URL myurl = new URL(rapplet.getDocumentBase(), filename);
-            BufferedInputStream is = new BufferedInputStream(myurl.openStream());
+	    URL myurl = new URL(URLname);  // rapplet.getDocumentBase(),
+        BufferedInputStream is = new BufferedInputStream(myurl.openStream());
 
-            PrevType = DataType;
-            PrevBytes = NumBytes;
-            PrevBits = NumBits;
+        PrevType = DataType;
+        PrevBytes = NumBytes;
+        PrevBits = NumBits;
             
 	    int tread=0;  // bytes read
 	    int bread=0;  // bytes read
@@ -2903,7 +2938,7 @@ public class My3DData extends Object {
 	    {
 		System.out.println("URLException:"+e);
 		applet.add("South",new Label ("IOException:"+e +"\n"));
-		applet.add("South",new Label ("Error: Unable to load file  "+filename+"\n"));
+		applet.add("South",new Label ("Error: Unable to load file \n")); // "+URLname+"
                 e.printStackTrace();
 		applet.setVisible(true);
 		// System.exit(1);
