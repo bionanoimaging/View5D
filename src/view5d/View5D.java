@@ -26,6 +26,8 @@ import java.applet.Applet;
 import java.awt.*;
 import java.util.*;
 import java.awt.event.*;
+import java.awt.GraphicsEnvironment;
+import java.awt.GraphicsDevice;
 import java.net.*;
 // import view5d.*;
 
@@ -47,7 +49,14 @@ public class View5D extends Applet{  // can also be: Container  (but then withou
   public static Dimension getScreenSize() {
         Dimension size;
         try {
-            size = Toolkit.getDefaultToolkit().getScreenSize();
+            //if (System.getProperty("java.version").compareTo("1.9") < 0)  // this is to avoid some nasty crash with some of the 1.8 versions in windows using getScreenSize();
+            //    return new Dimension(640, 480);  // needed for example for headless mode
+            //else
+            //    size = Toolkit.getDefaultToolkit().getScreenSize();
+            final GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
+            final GraphicsDevice[] gs = ge.getScreenDevices();
+            final DisplayMode dm = gs[0].getDisplayMode(); //
+            return new Dimension(dm.getWidth(),dm.getHeight());
         }
         catch(Exception e) {
             size = new Dimension(640, 480);  // needed for example for headless mode

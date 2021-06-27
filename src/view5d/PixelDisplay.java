@@ -195,11 +195,12 @@ public class PixelDisplay extends Panel implements MouseListener,ImageObserver,K
                     g.drawString("HZ",(int)(e*sizex+5),(int)(1.66*sizey));
                 if (e == data3d.GateElem)
                     if (data3d.GateActive)
-                        g.drawString("GA",(int)(e*sizex+5),(int) 3.0*sizey);
+                        g.drawString("GA",(int)(e*sizex+5),(int) 2.2*sizey);
                     else
-                        g.drawString("G",(int)(e*sizex+5),(int) 3.0*sizey);
+                        g.drawString("G",(int)(e*sizex+5),(int) 2.2*sizey);
                 if (data3d.InOverlayDispl(e))
-                    g.drawString("Ov",(int)(e*sizex+0) ,(int) 4.0*sizey);
+                    g.drawString("Ov",(int)(e*sizex+0) ,(int) 3.5*sizey);
+                g.drawString(String.format("%.3f", data3d.GetGamma(e)),(int)(e*sizex+5),(int)(4*sizey)); // +(1*sizex/3-10)
             // g.drawString(mytitle,10,10);
             }
         g.setColor(Color.red);
