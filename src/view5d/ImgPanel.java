@@ -225,11 +225,11 @@ public class ImgPanel extends Panel {
         AddPopupMenu(SubMenu,doSubMenu);
 
         MenuItem tmp;
-	tmp = new MenuItem("Help [?]");
+	tmp = new MenuItem("Help [? or F1]");
 	tmp.addActionListener(new MyMenuProcessor(c1,'?')); SubMenu.add(tmp);
 	tmp = new MenuItem("Exit [$]");
 	tmp.addActionListener(new MyMenuProcessor(c1,'$')); SubMenu.add(tmp);
-	tmp = new MenuItem("Readmode (Complex only) [^]");
+	tmp = new MenuItem("Readmode (Complex only) [^ or F2]");
 	tmp.addActionListener(new MyMenuProcessor(c1,'^')); SubMenu.add(tmp);
 
         SubMenu = new Menu("Import/Export",false);  // can eventually be dragged to the side

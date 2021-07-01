@@ -960,20 +960,18 @@ public void mouseWheelMoved(MouseWheelEvent e)
             UpdateAll();
         }
         else {
+            boolean lock_aspect = e.isControlDown(); // orthogonal Zoom
+            boolean was_locked = otherCanvas2.AspectLocked.getState();
+
+            if (lock_aspect)
+                otherCanvas2.AspectLocked.setState(true);
+
             if (e.getWheelRotation() < 0) {
                 ChangeZoom(1.125);
             } else {
                 ChangeZoom(1.0 / 1.125);
             }
-            if  (e.isControlDown())// orthogonal Zoom
-                if (e.getWheelRotation() < 0)
-                {
-                    ChangeOrthoZoom(1.125);
-                }
-                else
-                {
-                    ChangeOrthoZoom(1.0 / 1.125);
-                }
+            otherCanvas2.AspectLocked.setState(was_locked);
         }
 }
 
@@ -1363,7 +1361,17 @@ public void keyPressed(KeyEvent e) {
     {
         myChar = '°';
     }
-    
+
+    if (KeyEvent.VK_F2== e.getKeyCode())
+    {
+        myChar = '^';
+    }
+
+    if (KeyEvent.VK_F1== e.getKeyCode())
+    {
+        myChar = '?';
+    }
+
     int elem=my3ddata.ActiveElement,t=my3ddata.ActiveTime;
 
     ImageCanvas PreferredCanvas=null;
@@ -1594,6 +1602,13 @@ void SpawnHistogram(boolean forceHistogram)
      // return myplot;
    }
 
+public boolean checkProceed(String txt) { // calls a user dialog to see if the user really wants to proceed
+        AGenericDialog question= new AGenericDialog("Warning!");
+        question.addMessage(txt + " modifies the data.\nDo you really want to proceed?");
+        question.showDialog();
+        return ! question.wasCanceled();
+}
+
 
 public void ProcessKey(char myChar) {
     switch (myChar) {
@@ -1604,8 +1619,9 @@ public void ProcessKey(char myChar) {
 	    centerCursor();
 	    return;
     case 'D':
-        my3ddata.DeleteActElement();
-	UpdateAllPanels();
+        if (checkProceed("Delete Element"))
+            my3ddata.DeleteActElement();
+	    UpdateAllPanels();
 	return;
     case 'f':  // upcast datatype to float
         my3ddata.CloneFloat();
@@ -1616,7 +1632,8 @@ public void ProcessKey(char myChar) {
 	UpdateAllPanels();
         return;
     case '+':
-        my3ddata.AddMarkedElement(); // Adds the gate element to the active element
+        if (checkProceed("AddMarkedElement"))
+            my3ddata.AddMarkedElement(); // Adds the gate element to the active element
 	UpdateAllPanels();
 	return;
     case '_':
@@ -1624,15 +1641,18 @@ public void ProcessKey(char myChar) {
 	UpdateAllPanels();
 	return;
     case '-':
-        my3ddata.SubMarkedElement(); // Subtracts the gate element from the active element
+        if (checkProceed("SubtractMarkedElement"))
+            my3ddata.SubMarkedElement(); // Subtracts the gate element from the active element
 	UpdateAllPanels();
 	return;
     case '*':
-        my3ddata.MulMarkedElement(); // Multiplies the gate element with the active element
+        if (checkProceed("MultiplyMarkedElement"))
+            my3ddata.MulMarkedElement(); // Multiplies the gate element with the active element
 	UpdateAllPanels();
 	return;
     case '/':
-        my3ddata.DivMarkedElement(); // Multiplies the gate element with the active element
+        if (checkProceed("DivideMarkedElement"))
+            my3ddata.DivMarkedElement(); // Multiplies the gate element with the active element
 	UpdateAllPanels();
 	return;
     case 'e':  // advance one element cyclicly
@@ -1837,31 +1857,31 @@ public void ProcessKey(char myChar) {
     	AspectLocked.setState(! AspectLocked.getState());
     	return;
     case '#':  
-	my3ddata.SubtractTrackedSpot();
+	    my3ddata.SubtractTrackedSpot();
         my3ddata.InvalidateProjs(-1);  // all projections are invalid
         my3ddata.InvalidateSlices();
-	UpdateAll();
+    	UpdateAll();
 	return;
     case 's': 
         AlternateViewer xx=new AlternateViewer(applet);  // clone the data and open a new viewer
         My3DData nd=new My3DData(my3ddata);
         xx.Assign3DData(applet, null, nd);
-	UpdateAll();
+	    UpdateAll();
         return;
     case 'P':
-	my3ddata.ToggleProj(DimNr,false);
-	label.CoordsChanged();  
-	UpdateAll();
+        my3ddata.ToggleProj(DimNr,false);
+        label.CoordsChanged();
+        UpdateAll();
         return ;
     case 'p':
-	my3ddata.ToggleProj(DimNr,true);
-	UpdateAll();
+	    my3ddata.ToggleProj(DimNr,true);
+	    UpdateAll();
         return ;
     case '^':
-	my3ddata.ActElement().AdvanceReadMode();
-	my3ddata.InvalidateSlices();
-	my3ddata.InvalidateProjs(-1);
-	UpdateAll();
+	    my3ddata.ActElement().AdvanceReadMode();
+	    my3ddata.InvalidateSlices();
+	    my3ddata.InvalidateProjs(-1);
+	    UpdateAll();
         return ;
     case 'S':
         if (! myPanel.ROIstarted && ! LineROIStarted)   // otherwise the user has to finish the ROI first
@@ -1988,9 +2008,9 @@ public void ProcessKey(char myChar) {
 	//return ;
     case '!':   // transfers the colormap threshold to data threshold
 	// my3ddata.addLThresh(0.02);
-	my3ddata.CThreshToValThresh(-1,0.0,1.0);
-	UpdateAll();
-	return ;
+	    my3ddata.CThreshToValThresh(-1,0.0,1.0);
+	    UpdateAll();
+	    return ;
     case '1':
         if (my3ddata.GateActive && (my3ddata.GateElem == my3ddata.GateElem))
             {

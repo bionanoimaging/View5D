@@ -15,8 +15,8 @@ cp View5D_.jar "/mnt/c/NoBackup/DeconvCompileTest/DIPlib_3_2019/share/DIPimage/p
 cp View5D_.jar "../View5D.jar"
 cp View5D_.jar "/mnt/c/Users/pi96doc/.julia/artifacts/View5D.jar"
 cd ..
-cp View5D.jar "View5D_v2.3.5.jar"
-tar -czf "View5D_v2.3.5-jar.tar.gz" "View5D_v2.3.5.jar"
+cp View5D.jar "View5D_v2.3.6.jar"
+tar -czf "View5D_v2.3.6-jar.tar.gz" "View5D_v2.3.6.jar"
 # cp /*.class /usr/local/ImageJ/plugins/View5D/
 #cp View5D_.jar /usr/local/ImageJ/plugins/View5D/
 # cp View5D_.jar /windows/C/DriveF/JavaProgs/ImageJ/plugins/View5D/
