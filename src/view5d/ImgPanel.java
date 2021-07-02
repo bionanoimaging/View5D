@@ -24,11 +24,12 @@ package view5d;
 
 // import java.io.*;
 import java.awt.*;
+import java.awt.event.*;
 import java.lang.System.*;
 // import ij.*;
 
 // This class manages constructing the application
-public class ImgPanel extends Panel {
+public class ImgPanel extends Panel implements MouseWheelListener { // the listener is for the scrollbar (slider)
     static final long serialVersionUID = 1;
 
     Container applet;
@@ -53,7 +54,17 @@ public class ImgPanel extends Panel {
     public void OwnerPanel(ImgPanel owner) {
        DataPanel=owner;
         }
-  
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		if (e.getWheelRotation() < 0)
+			data3d.nextTime(1);
+		else
+			data3d.nextTime(-1);
+		AdjustOffset();
+		c1.UpdateAll();
+	}
+
    public void CheckScrollBar() {
 	   //System.out.println("CheckScrollBar: "+data3d.Times+" timesteps.\n");
 	   //System.out.println("Objects: Applet: "+System.identityHashCode(applet)+" , Data: "+data3d+", this Panel: "+System.identityHashCode(this)+", DataPanel: "+System.identityHashCode(DataPanel)+"\n");
@@ -78,6 +89,7 @@ public class ImgPanel extends Panel {
 						}
                     Slider.setBlockIncrement(data3d.Times / 10 + 1);
                     Slider.addAdjustmentListener(c1);
+                    Slider.addMouseWheelListener(this); // register this class for handling the events in it
                     Slider.setVisible(true);
                 	}
                 	else {

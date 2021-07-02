@@ -9,7 +9,7 @@ javac -target 1.8 -source 1.8 -deprecation -classpath ".:/usr/local/ImageJ/ij.ja
 # javac -deprecation -classpath "." View5D_.java
 jar -cf View5D_.jar view5d/*.class plugins.config
 # cp /*.class /usr/local/ImageJ/plugins/View5D/
-cp View5D_.jar /mnt/c/Users/pi96doc/Desktop/Fiji.app/plugins/View5D_-2.3.6.jar
+cp View5D_.jar /mnt/c/Users/pi96doc/Desktop/Fiji.app/plugins/View5D_-2.3.7.jar
 
 # cp View5D_.jar /usr/local/ImageJ/plugins/View5D/
 # cp View5D_.jar /windows/C/DriveF/JavaProgs/ImageJ/plugins/View5D/

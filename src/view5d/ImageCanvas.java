@@ -935,7 +935,15 @@ public void mouseEntered(MouseEvent e) {
 @Override
 public void mouseWheelMoved(MouseWheelEvent e)
 {
-        if ((e.isShiftDown()) && e.isControlDown())// orthogonal Zoom
+        if ((e.isAltDown())) { // advance in time
+            if (e.getWheelRotation() < 0)
+                my3ddata.nextTime(1);
+            else
+                my3ddata.nextTime(-1);
+            myPanel.AdjustOffset();
+            UpdateAll();
+        }
+        else if ((e.isShiftDown()) && e.isControlDown())// orthogonal Zoom
             if (e.getWheelRotation() < 0)
             {
                 ChangeOrthoZoom(1.0625);
