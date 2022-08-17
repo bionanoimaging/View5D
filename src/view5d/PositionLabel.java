@@ -182,18 +182,19 @@ public class PositionLabel extends Panel implements MouseListener, KeyListener {
         // javax.swing.JOptionPane.showMessageDialog(applet,
         String newtext = "Java 5D image viewer, Version V" + View5D_.serialVersionUID + "." + View5D_.serialSubVersionUID + "." + View5D_.serialSubSubVersionUID + "" +
                 " by Rainer Heintzmann\nLeibniz-IPHT and Friedrich Schiller University of Jena, Germany (heintzmann@gmail.com)\n\n" +
-                "NAVIGATION: Right-click for menu and context menus\nUse mouse click for changing slices or cursor keys (arrows) and next/previous page keys.\n" +
+                "NAVIGATION: Right-click for menu and context menus (individual for panels, colopmap list and text panel)\nUse mouse click for changing slices or cursor keys (arrows) and next/previous page keys.\n" +
+                "Zoom in and out via the mouse wheel. Press `shift` and use the mouse wheel to change the LUT gamma value. `shift middle mouse click resets gamma to one`\n +" +
                 "'e' and 'E' movel along the element- (color-) direction. ',' and '.' along time or between multiple images.\n +" +
-                "'home' positions the cursor in the center.\n" +
-                "shift-drag images for positon or press space bar before draggin with the mouse, zoom by typing 'A' and 'a' or zoom into a ROI by pressing 'Z'\n\n" +
-                "VIEW ADJUSTMENT:'<' and '>' for adjusting display magnificaltion perpendicular to the current display\n" +
-                "'i' for init view, 'c' for change ColorMap, \n" +
-                "1,2,5,6' for lower and '3,4,7,8' for upper Threshold coarse and fine adjustment, 't' and 'T' for automatic contrast adjustment using one or all elements\n" +
-                "'e' : toggle elements (if present), 'C' : toggle multicolor display, 'r','g','b' : select element for respective display\n" +
-                "'R','G','B' : clear respective channel, 'p','P': Toggle Projections (MIP, Avg)\n\n"+
-                "ROIs: Shift and mouse-drag for square ROIs, 'Ctrl-s' toggles ROI modes mouse-drag for multiple line ROIs\n\n"+
+                "'home'/'pos1' positions the cursor at the center for this panel.\n" +
+                "shift-drag images for positon or press space bar before draggin with the mouse, zoom by typing 'A' and 'a' or zoom-fit a ROI by pressing 'Z'\n\n" +
+                "VIEW ADJUSTMENT:'<' and '>' to adjusting display magnification (if aspect is not locked) perpendicular to the current display (like the mouse wheel)\n" +
+                "'i' to initialize view, 'c' to change ColorMap, \n" +
+                "1,2,5,6' for lower and '3,4,7,8' for upper Threshold coarse and fine adjustment, 't' and 'T' for automatic contrast adjustment for one or all elements repectively\n" +
+                "'e': toggle elements (if present), 'C': toggle multicolor display, 'r','g','b': select element for respective display\n" +
+                "'G': set element to gray colormap, 'R': glow red colormap, 'B': rainbow colormap, 'p','P': Toggle Projections (MIP, Avg)\n\n"+
+                "ROIs: 'shift' and mouse-drag for square ROIs, 'Ctrl-s' toggles ROI modes mouse-drag for multiple line ROIs\n\n"+
                 "See the context menus (right click) in the main and element displays for more commands with the respective keys shown in []\n" +
-                "For further Documentation see http://www.nanoimaging.de/View5D/";
+                "For further Documentation and commands see http://www.nanoimaging.de/View5D/";
         if (false) {
             MyText.setText(newtext);
             MyText.setCaretPosition(0);

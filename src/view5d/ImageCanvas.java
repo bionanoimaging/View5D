@@ -58,6 +58,8 @@ public class ImageCanvas extends Canvas implements ImageObserver,MouseListener,M
     
     int		imgw = -1;
     int		imgh = -1;
+    int defaultTimeElementChoice=1; // Time is the default direction to delete
+
     //int		xoff = 0;
     //int		yoff = 0;
     double	scale = 1.0;  // will be changed in init
@@ -1127,7 +1129,7 @@ public void mousePressed(MouseEvent e) {
           else  // just a mouse pressed in the empty image area
           {
               // e.isAltGraphDown() ||  // This does not work with matlab
-            if ( e.isMetaDown() || e.getClickCount()>1 || (e.getModifiers() & Event.ALT_MASK) != 0)
+            if ( e.isMetaDown() || e.getClickCount()>1 || (e.getModifiersEx() & InputEvent.ALT_DOWN_MASK) != 0)
                 ImgDragStarted = true;
             if (ImgDragStarted)  // Only drag the image but do not change coordinates
             {
@@ -1614,7 +1616,20 @@ public boolean checkProceed(String txt) { // calls a user dialog to see if the u
         AGenericDialog question= new AGenericDialog("Warning!");
         question.addMessage(txt + " modifies the data.\nDo you really want to proceed?");
         question.showDialog();
-        return ! question.wasCanceled();
+        // System.out.println("Dialog was "+!question.wasCanceled()+"\n");
+        return (!question.wasCanceled());
+}
+
+public int checkChoice(String txt, String [] choices, String default_choice) { // calls a user dialog to see if the user really wants to proceed
+    int choice=0;
+    AGenericDialog question= new AGenericDialog("Delete Element or Timepoint");
+    question.addMessage(txt);
+    question.addChoice("Delete", choices, default_choice);
+    question.showDialog();
+    choice = question.getNextChoiceIndex();
+    if (question.wasCanceled())
+        choice = -1;
+    return choice;
 }
 
 
@@ -1627,9 +1642,28 @@ public void ProcessKey(char myChar) {
 	    centerCursor();
 	    return;
     case 'D':
-        if (checkProceed("Delete Element"))
-            my3ddata.DeleteActElement();
-	    UpdateAllPanels();
+        if (my3ddata.Elements > 1)
+            if (my3ddata.Times <= 1)
+                {if (checkProceed("Delete Element"))
+                    my3ddata.DeleteActElement();}
+            else
+                {
+                String [] choices = {"Element", "Time"};
+                int choice = checkChoice("Deleting Element/Timepoint modifies the data. Do you really want to proceed?", choices, choices[defaultTimeElementChoice]);
+                if (choice == 0)
+                    my3ddata.DeleteActElement();
+                if (choice == 1)
+                    my3ddata.DeleteActTime();
+                defaultTimeElementChoice=choice; // store the default for the next call
+                myPanel.CheckScrollBar();
+                }
+            else if ((my3ddata.Times > 1))
+                {if (checkProceed("Delete Timepoint"))
+                    my3ddata.DeleteActTime();
+                myPanel.CheckScrollBar();
+                }
+    
+UpdateAllPanels();
 	return;
     case 'f':  // upcast datatype to float
         my3ddata.CloneFloat();

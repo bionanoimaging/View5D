@@ -6,9 +6,11 @@ cd src
 cp view5d/View5D_.java view5d/aaa.class
 rm view5d/*.class
 # javac -target 1.5 -source 1.5 -deprecation -classpath ".:/usr/local/ImageJ/ij.jar" view5d/View5D_.java view5d/View5D.java  # -target 1.4 -source 1.2
-javac -target 1.6 -source 1.6 -deprecation -classpath ".:/usr/local/ImageJ/ij.jar" view5d/View5D_.java view5d/View5D.java  # -target 1.4 -source 1.2
+# javac -target 1.6 -source 1.6 -deprecation -classpath ".:/usr/local/ImageJ/ij.jar" view5d/View5D_.java view5d/View5D.java  # -target 1.4 -source 1.2
+javac -target 1.6 -source 1.6 -deprecation -classpath ".:/usr/share/java/ij.jar" view5d/View5D_.java view5d/View5D.java  # -target 1.4 -source 1.2
 # javac -deprecation -classpath "." View5D_.java
-jar -cf View5D_.jar view5d/*.class plugins.config
+jar -cf /tmp/View5D_.jar view5d/*.class plugins.config
+cp /tmp/View5D_.jar .
 cp View5D_.jar ../../../PythonScripts/FromWeb/nanoimagingpack/NanoImagingPack/resources/
 cp View5D_.jar "/mnt/c/NoBackup/DeconvCompileTest/DIPlib_3_2017/share/DIPimage/private/View5D.jar"
 cp View5D_.jar "/mnt/c/NoBackup/DeconvCompileTest/DIPlib_3_2019/share/DIPimage/private/View5D.jar"
@@ -19,8 +21,8 @@ cp View5D_.jar "C:\Program Files\DIPlib_3_2019\share\DIPimage\private\View5D.jar
 cp View5D_.jar " C:\NoBackup\DeconvCompileTest\DIPlib_3_2019\share\DIPimage\private\View5D.jar"
 cp View5D_.jar " C:\NoBackup\DeconvCompileTest\DIPlib_3_2017\share\DIPimage\private\View5D.jar"
 cd ..
-cp View5D.jar "View5D_v2.3.7.jar"
-tar -czf "View5D_v2.3.7-jar.tar.gz" "View5D_v2.3.7.jar"
+cp View5D.jar "View5D_v2.3.8.jar"
+tar -czf "View5D_v2.3.8-jar.tar.gz" "View5D_v2.3.8.jar"
 # cp /*.class /usr/local/ImageJ/plugins/View5D/
 #cp View5D_.jar /usr/local/ImageJ/plugins/View5D/
 # cp View5D_.jar /windows/C/DriveF/JavaProgs/ImageJ/plugins/View5D/

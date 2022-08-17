@@ -2182,10 +2182,12 @@ public class My3DData extends Object {
         for (int t=0;t<Times;t++) {
             DeleteActElement(ElementsAtTime(t));
             try {
-                TimesColorInfo.get(t).removeElement(ActiveElement);
+                if (TimesColorInfo != null && TimesColorInfo.get(t) != null)
+                    TimesColorInfo.get(t).removeElement(ActiveElement);
             }
-            catch(Exception e)
+            catch (Exception e)
             {
+                // System.out.println("Exception "+e+"\n");
                 // ignore this
             }
         }
@@ -2200,6 +2202,38 @@ public class My3DData extends Object {
             ActiveElement = Elements-1;
         InvalidateSlices();
         InvalidateColor();
+        }
+    }
+
+    public void DeleteActTime()  // what, if another dublicate exists?
+    {
+        if (Times > 1) // The last time must not be deleted
+        {  
+            for (int e=0;e<Elements;e++) {
+                ElementsAtTime(ActiveTime).removeElementAt(0);
+                // System.out.println("Time is "+ActiveTime+", Delting Element: "+e+"\n");
+                
+                try {
+                    if (TimesColorInfo != null && TimesColorInfo.size() > ActiveTime && TimesColorInfo.get(ActiveTime) != null)
+                        TimesColorInfo.get(ActiveTime).removeElement(0);
+                }
+                catch(Exception ex)
+                {
+                    // System.out.println("Exception "+ex+"\n");
+                    // ignore this
+                }
+            }
+            MyTimeProj.removeElementAt(ActiveTime);
+            MyTimeColorProj.removeElementAt(ActiveTime);
+            MyTimes.removeElementAt(ActiveTime);  // However, all times use the same list of elements.
+            Times --;
+         
+            if (ActiveTime >= Times)
+                ActiveTime = Times-1;
+            InvalidateSlices();
+            InvalidateColor();
+            MyElements = ElementsAtTime(ActiveTime);
+            sizes[4]=Times;
         }
     }
     
@@ -2514,8 +2548,8 @@ public class My3DData extends Object {
         }
         
         // vecx = 1.0; vecy = 0.0; vecz = 0.0;
-        PlanesS[0].addElement(new Integer(ROIXs));PlanesS[1].addElement(new Integer(ROIYs));PlanesS[2].addElement(new Integer(ROIZs));
-        PlanesD[0].addElement(new Double(vecx));PlanesD[1].addElement(new Double(vecy));PlanesD[2].addElement(new Double(vecz));
+        PlanesS[0].addElement(Integer.valueOf(ROIXs));PlanesS[1].addElement(Integer.valueOf(ROIYs));PlanesS[2].addElement(Integer.valueOf(ROIZs));
+        PlanesD[0].addElement(Double.valueOf(vecx));PlanesD[1].addElement(Double.valueOf(vecy));PlanesD[2].addElement(Double.valueOf(vecz));
         // Just add the starting points to the Polygon
         for (int e=0;e<Elements;e++)
             GetBundleAt(e).TakePlaneROIs(PlanesS,PlanesD);

@@ -334,7 +334,7 @@ public class Bundle extends Object implements Cloneable {  // this class bundles
 
     public static int AddLookUpTable(int TableSize, byte reds[], byte greens[], byte blues[])
     {
-        MapSizes.addElement(new Integer(TableSize));
+        MapSizes.addElement(Integer.valueOf(TableSize));
         RedMaps.addElement(reds);
         GreenMaps.addElement(greens);
         BlueMaps.addElement(blues);
