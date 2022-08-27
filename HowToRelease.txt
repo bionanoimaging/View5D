@@ -1,13 +1,14 @@
 1. update version numbers. Also in pom.xml
-
+# once git needs to be configured: git config --global core.autocrlf true
 
 launch Fiji
 check Version of View5D
-help -> update
+help -> Update
 as many times as necessary until clean
-manage-update-sites:  Java-8 needs to be checked
+under help->Update, click manage-update-sites:  Java-8 needs to be checked
 Host: webdav:RainerHeintzmann
-in AdvancedMode change "Status/Action" to "Upload t Java-8"
+in AdvancedMode right-click modified file and choose "Upload t Java-8"
 
-~/Documents/Programming/Java/Fiji/View5D$ ../../scijava-scripts/release-version.sh
-:~/Documents/Programming/Java/Fiji/View5D$ git push --tags
+run from the ~/Documents/Fiji/ folder which contains the pom.xml file:
+~/Documents/Fiji/View5D$ ../../scijava-scripts/release-version.sh
+:~/Documents/Fiji/View5D$ git push --tags

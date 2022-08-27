@@ -6,7 +6,7 @@ echo "/*-
  * #%L
  * View5D plugin for Fiji.
  * %%
- * Copyright (C) 2006 - 2020 Fiji developers.
+ * Copyright (C) 2006 - 2021 Fiji developers.
  * %%
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as
@@ -23,5 +23,5 @@ echo "/*-
  * <http://www.gnu.org/licenses/gpl-2.0.html>.
  * #L%
  */" |cat - "$f" > "/tmp/$f"; done
-cp /tmp/*.java  ~/Documents/Programming/Java/Fiji/View5D/src/main/java/view5d/ 
+cp /tmp/*.java  ~/Documents/Fiji/View5D/src/main/java/view5d/ 
 rm /tmp/*.java
