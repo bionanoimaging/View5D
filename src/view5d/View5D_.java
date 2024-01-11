@@ -35,7 +35,7 @@ import ij.gui.*;
 public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
     public static final long serialVersionUID = 2;
     public static final long serialSubVersionUID = 3;
-    public static final long serialSubSubVersionUID = 8;
+    public static final long serialSubSubVersionUID = 9;
 	// Panel panel;
 	int previousId;
 	ImagePlus imp;

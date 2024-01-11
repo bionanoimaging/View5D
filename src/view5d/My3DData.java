@@ -1043,10 +1043,13 @@ public class My3DData extends Object {
        	GetBundleAt(e).SetMaxcs(max);
        	return false;
        }
-       return true;
+        return true;
     }
     
     public boolean SetScaledMinMaxcs(int elem, double Min, double Max) {
+        GetBundleAt(elem).cmapcHigh = Bundle.MaxCTable - 1;  // set the color map thresholds back to normal
+        GetBundleAt(elem).cmapcLow = 0;
+        GetBundleAt(elem).CompCMap();
         return SetThresh(elem, (Min - ElementAt(elem).OffsetV) / ElementAt(elem).ScaleV, (Max - ElementAt(elem).OffsetV) / ElementAt(elem).ScaleV);
         //return Getmincs(elem)*ElementAt(elem).ScaleV + ElementAt(elem).OffsetV;
     }
@@ -1111,7 +1114,7 @@ public class My3DData extends Object {
         return max;
     }
 
-    public boolean AdjustThreshGlobal() {   // adjusts the threshold globall for all slices with one min and max value
+    public boolean AdjustThreshGlobal() {   // adjusts the threshold globally for all slices with one min and max value
         double min=GlobalMin();
         double max=GlobalMax();
         boolean valid = true;
@@ -1201,10 +1204,10 @@ public class My3DData extends Object {
         double max = GetBundleAt(elem).GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
         double min = GetBundleAt(elem).GetMincs();
         // double cmax = GetBundleAt(elem).cmapcHigh;    //  These are the current indices into the colormap
-        double cmin = GetBundleAt(elem).cmapcLow;
+        double cmin = GetBundleAt(elem).cmapcLow;    // index of the lowest currently used entry in the colortable
         
-        double scale = (max-min) / Bundle.MaxCTable;
-        double nmin = min + scale*cmin;
+        // double scale = (max-min) / Bundle.MaxCTable;
+        double nmin = min + (max-min)*cmin / (Bundle.MaxCTable-1); // scale*cmin;
         return nmin;
     }
 
@@ -1212,10 +1215,10 @@ public class My3DData extends Object {
     {
         double max = GetBundleAt(elem).GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
         double min = GetBundleAt(elem).GetMincs();
-        double cmax = GetBundleAt(elem).cmapcHigh;    //  These are the current indices into the colormap
+        double cmax = GetBundleAt(elem).cmapcHigh;    //  index of the highest currently used entry in the colortable
         // double cmin = GetBundleAt(elem).cmapcLow;
         
-        double nmax = min + (max-min)*cmax/Bundle.MaxCTable;
+        double nmax = min + (max-min)*cmax/(Bundle.MaxCTable-1);
         return nmax;
     }
 
@@ -1391,7 +1394,7 @@ public class My3DData extends Object {
                     ColInfo = AllCol.get(e);
                     GetBundleAt(e).SetMincs(ColInfo.MinCs);
                     GetBundleAt(e).SetMaxcs(ColInfo.MaxCs);
-                    setColorMapThresh(e, ColInfo.cmapcLow,ColInfo.cmapcHigh);
+                    setColorMapThresh(e, ColInfo.cmapcLow, ColInfo.cmapcHigh);
                     // SetThresh(e,ColInfo.MinCs,ColInfo.MaxCs);
                     // System.out.println("Retrieved TimeInfo "+ActiveTime + " Elem: "+e+" "+ ColInfo.cmapcLow + ", " + ColInfo.cmapcHigh + ", " + ColInfo.MinCs + ", " + ColInfo.MaxCs + " Size: "+AllCol.size()+"\n");
                 }
@@ -1653,8 +1656,10 @@ public class My3DData extends Object {
         {
             String NV,UV;
             double SV,OV,Min,Max,Gamma;
-            NV=md.getNextString();UV=md.getNextString();SV=md.getNextNumber();OV=md.getNextNumber();Min=md.getNextNumber();Max=md.getNextNumber();
-            DispOffset[0]=md.getNextNumber();DispOffset[1]=md.getNextNumber();DispOffset[2]=md.getNextNumber();Gamma=md.getNextNumber();
+            NV=md.getNextString();UV=md.getNextString();SV=md.getNextNumber();OV=md.getNextNumber();
+            Min=md.getNextNumber();Max=md.getNextNumber();
+            DispOffset[0]=md.getNextNumber();DispOffset[1]=md.getNextNumber();
+            DispOffset[2]=md.getNextNumber();Gamma=md.getNextNumber();
             // boolean oldElementsLinked=elementsLinked;
             elementsLinked=md.getNextBoolean();
             ElementAt(e).SetScales(SV,OV,NV,UV);  // The value scales are element specific
@@ -1663,6 +1668,7 @@ public class My3DData extends Object {
             if (elementsLinked)
                 copyLinkedProperties(ActiveElement);
             timesLinked=md.getNextBoolean();
+            InvalidateSlices();
         }
     }
 
