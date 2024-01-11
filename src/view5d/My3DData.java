@@ -1039,6 +1039,9 @@ public class My3DData extends Object {
     {
        if ((GetBundleAt(e).GetMincs() != min) ||  (GetBundleAt(e).GetMaxcs() != max))
        	{
+        GetBundleAt(e).cmapcHigh = Bundle.MaxCTable - 1;  // set the color map thresholds back to normal
+        GetBundleAt(e).cmapcLow = 0;
+        GetBundleAt(e).CompCMap();
        	GetBundleAt(e).SetMincs(min);
        	GetBundleAt(e).SetMaxcs(max);
        	return false;
@@ -1047,9 +1050,6 @@ public class My3DData extends Object {
     }
     
     public boolean SetScaledMinMaxcs(int elem, double Min, double Max) {
-        GetBundleAt(elem).cmapcHigh = Bundle.MaxCTable - 1;  // set the color map thresholds back to normal
-        GetBundleAt(elem).cmapcLow = 0;
-        GetBundleAt(elem).CompCMap();
         return SetThresh(elem, (Min - ElementAt(elem).OffsetV) / ElementAt(elem).ScaleV, (Max - ElementAt(elem).OffsetV) / ElementAt(elem).ScaleV);
         //return Getmincs(elem)*ElementAt(elem).ScaleV + ElementAt(elem).OffsetV;
     }

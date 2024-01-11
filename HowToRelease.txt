@@ -1,4 +1,7 @@
-1. update version numbers. Also in pom.xml
+vi ./javacImageJ  and update version number
+./copyToFIJI
+
+1. update version numbers. Also in javacImageJ and pom.xml but advanced its separate Version number from the Java code but these two should be the same (higher ones)
 # once git needs to be configured: git config --global core.autocrlf true
 
 launch Fiji
@@ -7,7 +10,7 @@ help -> Update
 as many times as necessary until clean
 under help->Update, click manage-update-sites:  Java-8 needs to be checked
 Host: webdav:RainerHeintzmann
-in AdvancedMode right-click modified file and choose "Upload t Java-8"
+in AdvancedMode right-click modified file and choose "Upload to Java-8" and click on "Apply Changes (Upload)"
 
 run from the ~/Documents/Fiji/ folder which contains the pom.xml file:
 ~/Documents/Fiji/View5D$ ../../scijava-scripts/release-version.sh

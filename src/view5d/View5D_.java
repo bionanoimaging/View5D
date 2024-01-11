@@ -34,8 +34,8 @@ import ij.gui.*;
 /* The code below is necessary to include the software as a plugin into ImageJ */
 public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
     public static final long serialVersionUID = 2;
-    public static final long serialSubVersionUID = 3;
-    public static final long serialSubSubVersionUID = 9;
+    public static final long serialSubVersionUID = 5;   // to agree with the Fiji Version (jump from 2.3.9 to 2.5.2)
+    public static final long serialSubSubVersionUID = 2;
 	// Panel panel;
 	int previousId;
 	ImagePlus imp;

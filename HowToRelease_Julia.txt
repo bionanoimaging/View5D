@@ -3,5 +3,4 @@
 3.) Push the View5D directory to GitHub. Make a new release under https://github.com/bionanoimaging/View5D/releases adding also the binary (e.g. View5D_v2.3.9-jar.tar.gz)
 4.) Follow the instructions in the Artifact.toml file in the Julia directory
 5.) Bump Julia Version Number and Push
-6.) Comment: @JuliaRegistrator register
-7.) Edit Version under "Releases" and add source_code.zip and source_code.tar.gz
+7.) Comment: @JuliaRegistrator register  (This will, after a while automatically create the .zip and gz.zip file)
