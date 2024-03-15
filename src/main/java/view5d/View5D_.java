@@ -28,6 +28,7 @@
 package view5d;
 
 import java.awt.event.*;
+import java.io.IOException;
 import java.awt.*;
 import java.util.*;
 import java.text.*;
@@ -37,11 +38,20 @@ import ij.plugin.*;
 import ij.process.*;
 import ij.gui.*;
 
+import java.net.JarURLConnection;  // needed for extracting the Version information
+import java.net.URLClassLoader;
+import java.util.jar.Attributes;
+// import java.util.jar.Manifest;
+// import java.util.jar.Manifest.*;
+import java.util.jar.JarFile.*;
+
+  
 /* The code below is necessary to include the software as a plugin into ImageJ */
 public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
-    public static final long serialVersionUID = 2;
-    public static final long serialSubVersionUID = 5;   // to agree with the Fiji Version (jump from 2.3.9 to 2.5.2)
-    public static final long serialSubSubVersionUID = 2;
+    // public static final long serialVersionUID = 2;
+    // public static final long serialSubVersionUID = 5;   // to agree with the Fiji Version (jump from 2.3.9 to 2.5.2)
+    // public static final long serialSubSubVersionUID = 2;
+    public static String VersionString = "unknown";
 	// Panel panel;
 	int previousId;
 	ImagePlus imp;
@@ -56,6 +66,28 @@ public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
     boolean AspectFromData=false;
     public int SizeX=0,SizeY=0,SizeZ=0,Elements=1,Times=1,DimensionOrder=0,AppendTo=0;
 
+    public String getVersion() {
+        java.net.URLClassLoader cl = (java.net.URLClassLoader) getClass().getClassLoader();
+        try {
+            java.net.URL url = cl.findResource("META-INF/MANIFEST.MF");
+            java.util.jar.Manifest manifest = new java.util.jar.Manifest(url.openStream());
+            // do stuff with it
+            Attributes mainAttrs = manifest.getMainAttributes();
+            if (mainAttrs == null) return null;
+            return mainAttrs.getValue("Implementation-Version");
+        } catch (IOException E) {
+            return "unkown version";
+            // handle
+        }        
+        // java.util.jar.Manifest m = java.util.jar.JarFile.getManifest(View5D.class);
+        // final JarURLConnection conn = (JarURLConnection) JarURL.openConnection();
+        // java.util.jar.Manifest m = new java.util.jar.Manifest(conn.getManifest());
+        // if (m == null) return null;
+    //     Attributes mainAttrs = m.getMainAttributes();
+    //     if (mainAttrs == null) return null;
+    //     return mainAttrs.getValue("Implementation-Version");
+    }
+    
     public void windowActivated(java.awt.event.WindowEvent windowEvent) {
     }
     
@@ -376,6 +408,7 @@ public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
 	
 	public View5D_() {
 		super("5D Viewer");
+        VersionString = getVersion();
 		data3d=null;
 		if (! LoadImg(0))
 		{
@@ -431,7 +464,7 @@ public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
 	*/
 	
     void showAbout() {
-              IJ.showMessage("About View5D, Version V"+serialVersionUID+"."+serialSubVersionUID+"."+serialSubSubVersionUID,
+              IJ.showMessage("About View5D, Version V"+getVersion(), // serialVersionUID+"."+serialSubVersionUID+"."+serialSubSubVersionUID,
 	      " 5D-Viewer by Rainer Heintzmann\nUniversity of Jena, Jena, Germany and Leibniz Institute of PHotonics Technology, Germany\n"+
               "heintzmann@googlemail.com\n"+
               "http://www.nanoimaging.de/View5D/\n"+

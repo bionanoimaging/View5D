@@ -35,7 +35,7 @@ import java.text.*;
 import javax.swing.JOptionPane;
 
 public class PositionLabel extends Panel implements MouseListener, KeyListener {
-    static final long serialVersionUID = 1;
+    // static final long serialVersionUID = 1;
     ImageCanvas c1, c2, c3;
     My3DData data3d;
     Label l1, l2, l3, l4, l5, l6;
@@ -185,7 +185,7 @@ public class PositionLabel extends Panel implements MouseListener, KeyListener {
 
     void Help() {
         // javax.swing.JOptionPane.showMessageDialog(applet,
-        String newtext = "Java 5D image viewer, Version V" + View5D_.serialVersionUID + "." + View5D_.serialSubVersionUID + "." + View5D_.serialSubSubVersionUID + "" +
+        String newtext = "Java 5D image viewer, Version V" + View5D_.VersionString + // serialVersionUID + "." + View5D_.serialSubVersionUID + "." + View5D_.serialSubSubVersionUID + "" +
                 " by Rainer Heintzmann\nLeibniz-IPHT and Friedrich Schiller University of Jena, Germany (heintzmann@gmail.com)\n\n" +
                 "NAVIGATION: Right-click for menu and context menus (individual for panels, colopmap list and text panel)\nUse mouse click for changing slices or cursor keys (arrows) and next/previous page keys.\n" +
                 "Zoom in and out via the mouse wheel. Press `shift` and use the mouse wheel to change the LUT gamma value. `shift middle mouse click resets gamma to one`\n +" +
