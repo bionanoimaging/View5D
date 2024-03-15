@@ -119,4 +119,7 @@
 			<artifactId>ij</artifactId>
 		</dependency>
 	</dependencies>
+	<build>
+		<sourceDirectory>src</sourceDirectory>
+	</build>
 </project>
