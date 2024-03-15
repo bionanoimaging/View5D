@@ -17,3 +17,5 @@ tst
 
 # Java Class files
 *.class
+
+target/
