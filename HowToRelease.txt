@@ -1,5 +1,7 @@
-vi ./javacImageJ  and update version number
-./copyToFIJI
+run the following command:
+../scijava-scripts/release-version.sh
+
+
 
 1. update version numbers. Also in javacImageJ and pom.xml but advanced its separate Version number from the Java code but these two should be the same (higher ones)
 # once git needs to be configured: git config --global core.autocrlf true
