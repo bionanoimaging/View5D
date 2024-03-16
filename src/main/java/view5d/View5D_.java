@@ -44,6 +44,9 @@ import java.util.jar.Attributes;
 // import java.util.jar.Manifest;
 // import java.util.jar.Manifest.*;
 import java.util.jar.JarFile.*;
+import java.net.URL;
+// import java.net.JarURLConnection;
+import java.util.jar.Manifest;
 
   
 /* The code below is necessary to include the software as a plugin into ImageJ */
@@ -67,25 +70,16 @@ public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
     public int SizeX=0,SizeY=0,SizeZ=0,Elements=1,Times=1,DimensionOrder=0,AppendTo=0;
 
     public String getVersion() {
-        java.net.URLClassLoader cl = (java.net.URLClassLoader) getClass().getClassLoader();
         try {
-            java.net.URL url = cl.findResource("META-INF/MANIFEST.MF");
-            java.util.jar.Manifest manifest = new java.util.jar.Manifest(url.openStream());
-            // do stuff with it
+            URL resourceUrl = View5D_.class.getResource(View5D_.class.getSimpleName() + ".class");
+            JarURLConnection connection = (JarURLConnection) resourceUrl.openConnection();
+            Manifest manifest = connection.getManifest();
             Attributes mainAttrs = manifest.getMainAttributes();
             if (mainAttrs == null) return null;
             return mainAttrs.getValue("Implementation-Version");
         } catch (IOException E) {
             return "unkown version";
-            // handle
         }        
-        // java.util.jar.Manifest m = java.util.jar.JarFile.getManifest(View5D.class);
-        // final JarURLConnection conn = (JarURLConnection) JarURL.openConnection();
-        // java.util.jar.Manifest m = new java.util.jar.Manifest(conn.getManifest());
-        // if (m == null) return null;
-    //     Attributes mainAttrs = m.getMainAttributes();
-    //     if (mainAttrs == null) return null;
-    //     return mainAttrs.getValue("Implementation-Version");
     }
     
     public void windowActivated(java.awt.event.WindowEvent windowEvent) {
