@@ -8,8 +8,8 @@ set -e
 # javac -target 1.6 -source 1.6 -deprecation -classpath ".:/usr/share/java/ij.jar" view5d/View5D_.java view5d/View5D.java  # -target 1.4 -source 1.2
 # jar -cf /tmp/View5D_.jar view5d/*.class plugins.config
 mvn clean package
-myjar=$(find target -name '*.jar' | grep -v sources)
-cp "$myjar"  ../../../PythonScripts/FromWeb/nanoimagingpack/NanoImagingPack/resources/
+myjar=$(find target -name '*.jar' | grep -v sources | grep -v javadoc)
+cp "$myjar"  ../../PythonScripts/FromWeb/nanoimagingpack/NanoImagingPack/resources/
 cp "$myjar"  "/mnt/c/NoBackup/DeconvCompileTest/DIPlib_3_2017/share/DIPimage/private/View5D.jar"
 cp "$myjar"  "/mnt/c/NoBackup/DeconvCompileTest/DIPlib_3_2019/share/DIPimage/private/View5D.jar"
 cp "$myjar"  "../View5D.jar"

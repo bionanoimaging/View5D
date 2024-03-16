@@ -1,17 +1,16 @@
 run the following command:
 ../scijava-scripts/release-version.sh
 
-
-
-1. update version numbers. Also in javacImageJ and pom.xml but advanced its separate Version number from the Java code but these two should be the same (higher ones)
-# once git needs to be configured: git config --global core.autocrlf true
+go to
+https://maven.scijava.org/#nexus-search;classname~View5D
+and get the released jar file and put it in the ImageJ folder: C:\Users\pi96doc\Desktop\UserPrograms\fiji-win64\Fiji.app\plugins
 
 launch Fiji
 check Version of View5D
 help -> Update
 as many times as necessary until clean
 under help->Update, click manage-update-sites:  Java-8 needs to be checked
-Host: webdav:RainerHeintzmann
+Host: webdav:RainerHeintzmann  pass: see email (14 Mar)
 in AdvancedMode right-click modified file and choose "Upload to Java-8" and click on "Apply Changes (Upload)"
 
 run from the ~/Documents/Fiji/ folder which contains the pom.xml file:
