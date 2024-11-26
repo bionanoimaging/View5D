@@ -2180,9 +2180,9 @@ UpdateAllPanels();
     case 'l':
 	if (!(applet instanceof View5D))
 	   ((View5D_) applet).LoadImg(0);  
-	else {
-        my3ddata.Load(my3ddata.PrevType, my3ddata.PrevBytes, my3ddata.PrevBits, ((View5D) applet).getDocumentBase() + ((View5D) applet).filename);   //  ((View5D) applet)   commented out for now, since the document base is unknown for non-applets
-        UpdateAllPanels();
+	else { // do nothing
+        // my3ddata.Load(my3ddata.PrevType, my3ddata.PrevBytes, my3ddata.PrevBits, ((View5D) applet).getDocumentBase() + ((View5D) applet).filename);   //  ((View5D) applet)   commented out for now, since the document base is unknown for non-applets
+        // UpdateAllPanels();
     }
 	UpdateAll();  // To display mask
 	return;

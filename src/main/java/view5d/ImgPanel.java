@@ -418,8 +418,8 @@ public class ImgPanel extends Panel implements MouseWheelListener { // the liste
         tmp = new MenuItem("Force new histogram window [H]");
 	tmp.addActionListener(new MyMenuProcessor(c1,'H')); SubMenu.add(tmp);
 
-        label = new PositionLabel("View5D initialization.",c1,c2,c3,data3d);
-        grid.add(label);
+	label = new PositionLabel("View5D initialization.",c1,c2,c3,data3d);
+	grid.add(label);
 
 	c1.ConnectLabel(label);
 	c2.ConnectLabel(label);

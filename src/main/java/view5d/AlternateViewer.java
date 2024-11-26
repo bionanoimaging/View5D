@@ -80,17 +80,22 @@ public class AlternateViewer extends Frame implements WindowListener {
     }
       
     public void Assign3DData(Container myapplet, ImgPanel ownerPanel, My3DData cloneddata) {
-    cloned = cloneddata; // new My3DData(datatoclone);
-    ImgPanel np=new ImgPanel(myapplet,cloneddata);
-    if (!(applet instanceof View5D))
-	   ((View5D_) applet).panels.addElement(np);  // enter this view into the list
-    else
-	   ((View5D) applet).panels.addElement(np);  // enter this view into the list
-    np.OwnerPanel(ownerPanel);
-    mycomponent=np;
-    np.CheckScrollBar();
-    add("Center", np);	
-    setVisible(true);
+        cloned = cloneddata; // new My3DData(datatoclone);
+        
+        ImgPanel np=new ImgPanel(myapplet,cloneddata);
+
+        if (!(applet instanceof View5D)) {
+            ((View5D_) applet).panels.addElement(np);  // enter this view into the list
+        }
+        else {
+            ((View5D) applet).panels.addElement(np);  // enter this view into the list
+            ((View5D) applet).mypan = np;  // ensure that the viewer main class accepts this as the main panel
+        }
+        np.OwnerPanel(ownerPanel);
+        mycomponent=np;
+        np.CheckScrollBar();
+        add("Center", np);	
+        setVisible(true);
     }
 
     public void AssignPixelDisplay(PixelDisplay pd) {

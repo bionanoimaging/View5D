@@ -50,7 +50,6 @@ package view5d;
 
 import java.awt.image.*;
 import java.awt.event.*;
-import java.awt.Graphics;
 import java.awt.*;
 import java.util.*;
 import java.text.*;
@@ -74,74 +73,75 @@ public class PixelDisplay extends Panel implements MouseListener,MouseWheelListe
     PopupMenu MyPopupMenu;
     Menu   ColorMenu;
 
-    void AddColorMenu(String Name,int i)
+    void AddColorMenu(String Name, int i)
     {
         MenuItem tmp;
         tmp = new MenuItem(Name);
-        tmp.addActionListener(new MyMenuProcessor(this,c1,false,i)); ColorMenu.add(tmp);
+        tmp.addActionListener(new MyMenuProcessor(this, c1,false,i));
+        ColorMenu.add(tmp);
         tmp = new MenuItem(Name+" (inverted)");
-        tmp.addActionListener(new MyMenuProcessor(this,c1,true,i)); ColorMenu.add(tmp);
+        tmp.addActionListener(new MyMenuProcessor(this, c1,true,i));
+        ColorMenu.add(tmp);
     }
     
     PixelDisplay(My3DData data, ImageCanvas C1,ImageCanvas C2, ImageCanvas C3)
     {
-	c1 = C1;
-	c2 = C2;
-	c3 = C3;
-	data3d = data;
-	// Rectangle r=getBounds();
-	// System.out.println("Rectangle "+r);
-	setBounds(0,0,200,50);
-	// r=getBounds();
-	// System.out.println("Rectangle "+r);
-	// initialize();
-	if (data.Elements > 5)
-	    PlotMode = 1;    // Spectrum Plot
+        c1 = C1;
+        c2 = C2;
+        c3 = C3;
+        data3d = data;
+        // Rectangle r=getBounds();
+        // System.out.println("Rectangle "+r);
+        setBounds(0,0,200,50);
+        // r=getBounds();
+        // System.out.println("Rectangle "+r);
+        // initialize();
+        if (data.Elements > 5)
+            PlotMode = 1;    // Spectrum Plot
 
-	addMouseListener(this); // register this class for handling the events in it
-    addMouseWheelListener(this); // register this class for handling the events in it
-	addKeyListener(this); // register this class for handling the events in it
+        addMouseListener(this); // register this class for handling the events in it
+        addMouseWheelListener(this); // register this class for handling the events in it
+        addKeyListener(this); // register this class for handling the events in it
         
         MyPopupMenu =new PopupMenu("Element Menu");  // tear off menu
-	add(MyPopupMenu);
+	    add(MyPopupMenu);
 
         Menu SubMenu = new Menu("General",false);  // can eventually be dragged to the side
         MyPopupMenu.add(SubMenu);
 
         MenuItem tmp;
-	tmp = new MenuItem("initialise scaling [i]");
-	tmp.addActionListener(new MyMenuProcessor(this,'i')); SubMenu.add(tmp);
-	tmp = new MenuItem("Set Value Units and Scalings [N]");
-	tmp.addActionListener(new MyMenuProcessor(this,'N')); SubMenu.add(tmp);
-	tmp = new MenuItem("eXport to ImageJ (ImageJ only) [X]");
-	tmp.addActionListener(new MyMenuProcessor(this,'X')); SubMenu.add(tmp);
+        tmp = new MenuItem("initialise scaling [i]");
+        tmp.addActionListener(new MyMenuProcessor(this,'i')); SubMenu.add(tmp);
+        tmp = new MenuItem("Set Value Units and Scalings [N]");
+        tmp.addActionListener(new MyMenuProcessor(this,'N')); SubMenu.add(tmp);
+        tmp = new MenuItem("eXport to ImageJ (ImageJ only) [X]");
+        tmp.addActionListener(new MyMenuProcessor(this,'X')); SubMenu.add(tmp);
 
         SubMenu = new Menu("Markers",false);  // can eventually be dragged to the side
         MyPopupMenu.add(SubMenu);
-	tmp = new MenuItem("Marker Menu [M]");
-	tmp.addActionListener(new MyMenuProcessor(this,'M')); SubMenu.add(tmp);
-	tmp = new MenuItem("print/save marker list [m]");
-	tmp.addActionListener(new MyMenuProcessor(this,'m')); SubMenu.add(tmp);
+        tmp = new MenuItem("Marker Menu [M]");
+        tmp.addActionListener(new MyMenuProcessor(this,'M')); SubMenu.add(tmp);
+        tmp = new MenuItem("print/save marker list [m]");
+        tmp.addActionListener(new MyMenuProcessor(this,'m')); SubMenu.add(tmp);
 
         SubMenu = new Menu("Plotting",false);  // can eventually be dragged to the side
         MyPopupMenu.add(SubMenu);
         tmp = new MenuItem("spawn plot display [s]");
-	tmp.addActionListener(new MyMenuProcessor(this,'s')); SubMenu.add(tmp);
+	    tmp.addActionListener(new MyMenuProcessor(this,'s')); SubMenu.add(tmp);
         tmp = new MenuItem("toggle plot display [q]");
-	tmp.addActionListener(new MyMenuProcessor(this,'q')); SubMenu.add(tmp);
+	    tmp.addActionListener(new MyMenuProcessor(this,'q')); SubMenu.add(tmp);
         tmp = new MenuItem("normalize plot display [n]");
-	tmp.addActionListener(new MyMenuProcessor(this,'n')); SubMenu.add(tmp);
+	    tmp.addActionListener(new MyMenuProcessor(this,'n')); SubMenu.add(tmp);
         tmp = new MenuItem("logarithmic mode [O]");
-	tmp.addActionListener(new MyMenuProcessor(this,'O')); SubMenu.add(tmp);
+	    tmp.addActionListener(new MyMenuProcessor(this,'O')); SubMenu.add(tmp);
         SubMenu = new Menu("ColorMaps",false);  // can eventually be dragged to the side
         MyPopupMenu.add(SubMenu);
         ColorMenu=SubMenu;   // is used in AddColorMenu
         
         for (int i=0;i<Bundle.ElementModels;i++)
         {
-            AddColorMenu(Bundle.ElementModelName[i],i);
+            AddColorMenu(Bundle.ElementModelName[i], i);
         }
-
     }
 
     @Override

@@ -94,6 +94,7 @@ public class PositionLabel extends Panel implements MouseListener, KeyListener {
         MyText.setFont(new Font(data3d.FontType, Font.PLAIN, data3d.FontSize));
         MyText.setEditable(false);
         PixDisplay = new PixelDisplay(data, c1, c2, c3);
+
         nf = java.text.NumberFormat.getNumberInstance(Locale.US);
         nf.setMaximumFractionDigits(6);
         // nf.setMinimumIntegerDigits(7);
@@ -185,7 +186,12 @@ public class PositionLabel extends Panel implements MouseListener, KeyListener {
 
     void Help() {
         // javax.swing.JOptionPane.showMessageDialog(applet,
-        String newtext = "Java 5D image viewer, Version V" + View5D_.VersionString + // serialVersionUID + "." + View5D_.serialSubVersionUID + "." + View5D_.serialSubSubVersionUID + "" +
+        String Version;
+        if ((data3d.applet instanceof View5D))
+            Version = ((View5D) data3d.applet).getVersion();
+        else
+            Version = ((View5D_) data3d.applet).getVersion();
+        String newtext = "Java 5D image viewer, Version V" + Version + // serialVersionUID + "." + View5D_.serialSubVersionUID + "." + View5D_.serialSubSubVersionUID + "" +
                 " by Rainer Heintzmann\nLeibniz-IPHT and Friedrich Schiller University of Jena, Germany (heintzmann@gmail.com)\n\n" +
                 "NAVIGATION: Right-click for menu and context menus (individual for panels, colopmap list and text panel)\nUse mouse click for changing slices or cursor keys (arrows) and next/previous page keys.\n" +
                 "Zoom in and out via the mouse wheel. Press `shift` and use the mouse wheel to change the LUT gamma value. `shift middle mouse click resets gamma to one`\n +" +

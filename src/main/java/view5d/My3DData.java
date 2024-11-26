@@ -109,7 +109,7 @@ public class My3DData extends Object {
 
     public Vector<Vector<AnElement>> MyTimes;
     public Vector<Vector<ASlice>[]> MyTimeProj;    // this stores all the different multi element projection data as a vector of vectors
-    public int Times=0,ActiveTime=0;
+    public int Times=0, ActiveTime=0;
     public Vector<ASlice[]>  MyTimeColorProj; // a vector of an array of ASlice
 //    public Vector TimeValues;    // keeps track of the exact time points
     

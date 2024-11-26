@@ -31,11 +31,13 @@ package view5d;
 import java.applet.Applet;
 import java.awt.*;
 import java.util.*;
+import java.util.jar.Attributes;
+import java.util.jar.Manifest;
 import java.awt.event.*;
-import java.awt.GraphicsEnvironment;
-import java.awt.GraphicsDevice;
+import java.io.IOException;
 import java.net.*;
 // import view5d.*;
+import java.text.NumberFormat;
 
 // insert : "public" before this to make it an applet
 public class View5D extends Applet{  // can also be: Container  (but then without the applet functionality)
@@ -68,6 +70,19 @@ public class View5D extends Applet{  // can also be: Container  (but then withou
             size = new Dimension(640, 480);  // needed for example for headless mode
         }
         return size;
+    }
+
+    public String getVersion() {
+        try {
+            URL resourceUrl = View5D.class.getResource(View5D.class.getSimpleName() + ".class");
+            JarURLConnection connection = (JarURLConnection) resourceUrl.openConnection();
+            Manifest manifest = connection.getManifest();
+            Attributes mainAttrs = manifest.getMainAttributes();
+            if (mainAttrs == null) return null;
+            return mainAttrs.getValue("Implementation-Version");
+        } catch (IOException E) {
+            return "unkown version";
+        }        
     }
 
     public void UpdatePanels()  // update all panels
@@ -255,9 +270,10 @@ public class View5D extends Applet{  // can also be: Container  (but then withou
             for (int e=0;e<Elements;e++)
             {
                 // System.out.println("Debug t:" + t+", e:"+e);
-                if (e==0 && t ==0)
+                if (e==0 && t ==0) {
                     anApplet.aviewer.Assign3DData(anApplet,anApplet.mypan,anApplet.data3d);
-                else
+                    // mypan = anApplet.mypan;
+                } else
                     System.arraycopy( barray, (e+Elements*t)*SizeX*SizeY*SizeZ,
                                  ((ByteElement) anApplet.data3d.ElementAt(e,t)).myData, 0 , SizeX*SizeY*SizeZ);
             }
@@ -880,11 +896,12 @@ public class View5D extends Applet{  // can also be: Container  (but then withou
                     // data3d.initGlobalThresh();
                     
 		setLayout(new BorderLayout());
-		mypan = new ImgPanel(this,data3d);
-                panels.addElement(mypan);  // enter this view into the list
+		mypan = new ImgPanel(this, data3d);
+        // System.out.println("CP 6 "+mypan);
+        panels.addElement(mypan);  // enter this view into the list
 		add("Center", mypan);
-                myLabel=new TextArea("5D-viewer Java Applet by Rainer Heintzmann, [press '?' for help]",1,76,TextArea.SCROLLBARS_NONE);
-                add("North", myLabel);
+        myLabel=new TextArea("5D-viewer Java Applet by Rainer Heintzmann, [press '?' for help]",1,76,TextArea.SCROLLBARS_NONE);
+        add("North", myLabel);
  		mypan.CheckScrollBar(); 
                 //Frame myfr=new Frame("View5D menu");
                 //myfr.setMenuBar(mypan.MyMenu);
@@ -1129,6 +1146,39 @@ public class View5D extends Applet{  // can also be: Container  (but then withou
        data3d.cleanup();
     }
 
+    public My3DData get_data() {
+        return data3d;
+    }
+
+    public Bundle get_bundle_at(int ne) {
+        return data3d.GetBundleAt(ne);
+    }
+
+    public void set_colormap_no(int nr, int elem) {
+        data3d.ToggleModel(elem, nr);
+        mypan.c1.UpdateAll();
+    }
+    public int get_active_element() {
+        return data3d.ActiveElement;
+    }
+    public int get_active_time() {
+        return data3d.ActiveTime;
+    }
+    public void add_colormap(int sz, byte reds[], byte greens[], byte blues[]) {
+        int lastLUT=data3d.AddLookUpTable(sz, reds, greens, blues);
+        NumberFormat  nf = java.text.NumberFormat.getNumberInstance(Locale.US);
+        String LUTName="User defined "+nf.format(lastLUT - Bundle.ElementModels+1);
+        // System.out.println("CP 2 "+LUTName);
+        //((ImgPanel) panels.firstElement()).c1.label.PixDisplay.AddColorMenu(LUTName,lastLUT);
+        //((ImgPanel) panels.elementAt(0)).c1.label.PixDisplay.AddColorMenu(LUTName,lastLUT);
+        // mypan.c1.myPanel.label.PixDisplay.AddColorMenu(LUTName, lastLUT);
+        // No Idea why the below does not work:
+        mypan.label.PixDisplay.AddColorMenu(LUTName, lastLUT);
+        data3d.SetColorModelNr(data3d.ActiveElement, lastLUT);
+		if (! data3d.SetThresh(0, sz-1))  // Set to the correct initial thresholds
+		    data3d.InvalidateSlices();
+        mypan.c1.UpdateAll();
+    }
 
     public String getAppletInfo() {
         return "A 5Dimage viewing tool.";
