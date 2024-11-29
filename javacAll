@@ -19,8 +19,10 @@ cp "$myjar"  "/mnt/c/Users/pi96doc/.julia/artifacts/View5D.jar"
 cp "$myjar"  "/mnt/c/NoBackup/DeconvCompileTest/DIPlib_3_2019/share/DIPimage/private/View5D.jar"
 cp "$myjar"  "/mnt/c/NoBackup/DeconvCompileTest/DIPlib_3_2017/share/DIPimage/private/View5D.jar"
 cp "$myjar"  "/mnt/c/Users/pi96doc/Desktop/UserPrograms/fiji-win64/Fiji.app/plugins/"
-tar -czf "${myjar%.jar}-jar.tar.gz" "$myjar"
-echo "${myjar%.jar}.jar.tar.gz"
+cd target
+totar=$(find -name '*.jar' | grep -v sources | grep -v javadoc)
+tar -czf "${totar%.jar}-jar.tar.gz" "$totar"
+echo "${totar%.jar}.jar.tar.gz"
 # cp /*.class /usr/local/ImageJ/plugins/View5D/
 #cp View5D_.jar /usr/local/ImageJ/plugins/View5D/
 # cp View5D_.jar /windows/C/DriveF/JavaProgs/ImageJ/plugins/View5D/
@@ -42,4 +44,5 @@ echo "${myjar%.jar}.jar.tar.gz"
 # cp View5D.html /net/mobi1/data1/WinApps/ImageJ/plugins/View5D/index.html
 # cp -r examples /net/mobi1/data1/WinApps/ImageJ/plugins/View5D/
 # cp *.class /net/mobi1/data1/MacOSX_local/ImageJ/plugins/View5D/
+
 

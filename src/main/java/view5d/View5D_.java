@@ -370,7 +370,7 @@ public class View5D_ extends PlugInFrame implements PlugIn, WindowListener {
                 // if (! lt.isGrayscale())
                 {
                     // IJ.showMessage("Found LUT, importing ...");
-                    int lastLUT=data3d.AddLookUpTable(lt.getMapSize(),lt.getReds(),lt.getGreens(),lt.getBlues());
+                    int lastLUT=data3d.AddLookUpTable(lt.getMapSize(),lt.getReds(),lt.getGreens(),lt.getBlues(), 0);
                     NumberFormat  nf = java.text.NumberFormat.getNumberInstance(Locale.US);
 
                     String LUTName="User defined "+nf.format(lastLUT-Bundle.ElementModels+1);

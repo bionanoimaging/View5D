@@ -1158,14 +1158,16 @@ public class View5D extends Applet{  // can also be: Container  (but then withou
         data3d.ToggleModel(elem, nr);
         mypan.c1.UpdateAll();
     }
+
     public int get_active_element() {
         return data3d.ActiveElement;
     }
     public int get_active_time() {
         return data3d.ActiveTime;
     }
-    public void add_colormap(int sz, byte reds[], byte greens[], byte blues[]) {
-        int lastLUT=data3d.AddLookUpTable(sz, reds, greens, blues);
+
+    public void add_colormap(int sz, byte reds[], byte greens[], byte blues[], int type) {
+        int lastLUT=data3d.AddLookUpTable(sz, reds, greens, blues, type);
         NumberFormat  nf = java.text.NumberFormat.getNumberInstance(Locale.US);
         String LUTName="User defined "+nf.format(lastLUT - Bundle.ElementModels+1);
         // System.out.println("CP 2 "+LUTName);

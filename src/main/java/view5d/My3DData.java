@@ -288,10 +288,10 @@ public class My3DData extends Object {
           return Pt;
     	}
 
-    public int AddLookUpTable(int MapSize,byte Reds[],byte Greens[],byte Blues[])
+    public int AddLookUpTable(int MapSize,byte Reds[],byte Greens[],byte Blues[], int type)
     { 
       int lastLUT=0;
-      lastLUT=Bundle.ElementModels+Bundle.AddLookUpTable(MapSize,Reds,Greens,Blues); 
+      lastLUT=Bundle.ElementModels+Bundle.AddLookUpTable(MapSize,Reds,Greens,Blues,type); 
       SetColorModelNr (ActiveElement,lastLUT);
       GetBundleAt(ActiveElement).CompCMap();
       return lastLUT;  // returns the last existing total LUT index
@@ -988,30 +988,32 @@ public class My3DData extends Object {
             copyLinkedProperties(ActiveElement);
     }
     
-    public void ToggleModel(int elem,int newModel ) {
-	GetBundleAt(elem).ToggleModel(newModel);
-	if (elem == ActiveElement)
-	{
-	IndexColorModel mymodel = GetBundleAt(elem).ElementModel;
-        MySlice[0].TakeModel(mymodel);
-        MySlice[1].TakeModel(mymodel);
-        MySlice[2].TakeModel(mymodel);
-	}
-    if (GetBundleAt(elem).DispOverlay) // This element is displayed in the overlay
-    	{
-    	InvalidateColor();
-    	}
-    if (elementsLinked)
-        copyLinkedProperties(elem);
+    public void ToggleModel(int elem, int newModel ) {
+        Bundle myBundle = GetBundleAt(elem);
+        myBundle.ToggleModel(newModel);
+        if (elem == ActiveElement)
+        {
+        IndexColorModel mymodel = myBundle.ElementModel;
+            MySlice[0].TakeModel(mymodel);
+            MySlice[1].TakeModel(mymodel);
+            MySlice[2].TakeModel(mymodel);
+        }
+        if (myBundle.DispOverlay) // This element is displayed in the overlay
+            {
+            InvalidateColor();
+            }
+        if (elementsLinked)
+            copyLinkedProperties(elem);
     }
     
     public void ToggleModel(int newModel ) {
-	ToggleModel(ActiveElement,newModel);
+	    ToggleModel(ActiveElement, newModel);
     }
     
-    public void InvertCMap()
+    public void SetInvertCMap(boolean inverse)
     {
-	GetBundleAt(ActiveElement).cmapIsInverse = ! GetBundleAt(ActiveElement).cmapIsInverse;
+	    GetBundleAt(ActiveElement).cmapIsInverse = inverse;
+        // ! GetBundleAt(ActiveElement).cmapIsInverse;
     }
     /*private void Setmincs(int elem, double val) {
         GetBundleAt(elem).SetMincs(val);
@@ -1049,6 +1051,7 @@ public class My3DData extends Object {
             //return ElementAt(elem).ScaleV*(Getmaxcs(elem)-Getmincs(elem));
     }
     
+    // transfers the threshold values to all time steps as a scale and shift
     public void transferThresh(int elem) {
         for (int t=0;t < Times;t++) {
             ElementAt(elem, t).SetScaleShift(Getmincs(elem), Getmaxcs(elem));
@@ -1081,11 +1084,19 @@ public class My3DData extends Object {
 
     public boolean AdjustThresh(int elementNum) {
         boolean valid=true;
-        GetBundleAt(elementNum).cmapcHigh = Bundle.MaxCTable-1;  // set the color map thresholds back to normal
-        GetBundleAt(elementNum).cmapcLow = 0;
-        GetBundleAt(elementNum).CompCMap();
+        Bundle myBundle = GetBundleAt(elementNum);
+        myBundle.cmapcHigh = Bundle.MaxCTable-1;  // set the color map thresholds back to normal
+        myBundle.cmapcLow = 0;
+        //System.out.println("is-inv"+myBundle.cmapIsInverse+"\n");
+        myBundle.CompCMap();
+        //System.out.println("is-inv"+myBundle.cmapIsInverse+"\n");
         double min = ElementAt(elementNum).ROIMinimum(ROIAt(elementNum));
         double max = ElementAt(elementNum).ROIMaximum(ROIAt(elementNum));
+        if (myBundle.IsDivergentColormap()) {
+            max = Math.max(Math.abs(min), Math.abs(max));
+            min = -max;
+            // System.out.println("min"+min+" max"+max+"\n");
+        }
         valid = SetThresh(elementNum,min,max);
         transferThresh(elementNum);
         return valid;
@@ -1155,24 +1166,26 @@ public class My3DData extends Object {
     }
 
     public void copyLinkedProperties(int anElement) { // copies a particular element threshold values to all element
-        double TLow = GetBundleAt(anElement).GetMincs();
-        double THigh = GetBundleAt(anElement).GetMaxcs();
-        boolean ShowOvUn = GetBundleAt(anElement).ShowOvUn;
-        boolean LogScale = GetBundleAt(anElement).LogScale;
-        boolean cmapIsInverse = GetBundleAt(anElement).cmapIsInverse;
-        int ElementModelNr = GetBundleAt(anElement).ElementModelNr;    // just a number for the current model
-        double Gamma = GetBundleAt(anElement).Gamma;
+        Bundle myBundle = GetBundleAt(anElement);
+        double TLow = myBundle.GetMincs();
+        double THigh = myBundle.GetMaxcs();
+        boolean ShowOvUn = myBundle.ShowOvUn;
+        boolean LogScale = myBundle.LogScale;
+        boolean cmapIsInverse = myBundle.cmapIsInverse;
+        int ElementModelNr = myBundle.ElementModelNr;    // just a number for the current model
+        double Gamma = myBundle.Gamma;
 
         for (int elementNum=0;elementNum<Elements;elementNum++) {
-            GetBundleAt(elementNum).SetMincs(TLow);
-            GetBundleAt(elementNum).SetMaxcs(THigh);
-            GetBundleAt(elementNum).ShowOvUn = ShowOvUn;
-            GetBundleAt(elementNum).LogScale = LogScale;
-            GetBundleAt(elementNum).cmapIsInverse = cmapIsInverse;
-            GetBundleAt(elementNum).ElementModelNr = ElementModelNr;
-            GetBundleAt(elementNum).Gamma = Gamma;
-            if (GetBundleAt(elementNum).cmapcLow > 0)
-                GetBundleAt(elementNum).CompCMap();   // This is usually faster than recomputing images
+            myBundle = GetBundleAt(elementNum);
+            myBundle.SetMincs(TLow);
+            myBundle.SetMaxcs(THigh);
+            myBundle.ShowOvUn = ShowOvUn;
+            myBundle.LogScale = LogScale;
+            myBundle.cmapIsInverse = cmapIsInverse;
+            myBundle.ElementModelNr = ElementModelNr;
+            myBundle.Gamma = Gamma;
+            if (myBundle.cmapcLow > 0)
+                myBundle.CompCMap();   // This is usually faster than recomputing images
             else
                 CThreshToValThresh(elementNum,0.25,1.0);  // If underflow a recomputation becomes necessary, but with 25% extra space
         }
@@ -1180,10 +1193,11 @@ public class My3DData extends Object {
 
     public void setColorMapThresh(int elem, int low, int high)  // These functions are far quicker for the display especially for large images
     {
-        GetBundleAt(elem).cmapcLow = low;
-        GetBundleAt(elem).cmapcHigh = high;
+        Bundle myBundle = GetBundleAt(elem);
+        myBundle.cmapcLow = low;
+        myBundle.cmapcHigh = high;
 
-        GetBundleAt(elem).CompCMap();   // This is usually faster than recomputing images
+        myBundle.CompCMap();   // This is usually faster than recomputing images
 //        if (GetBundleAt(elem).cmapcLow > 0)
 //            GetBundleAt(elem).CompCMap();   // This is usually faster than recomputing images
 //        else
@@ -1199,37 +1213,61 @@ public class My3DData extends Object {
     public void adjustColorMapLThresh(double howmuch)  // These functions are far quicker for the display especially for large images
     {
 	    double howmany= (howmuch*Bundle.MaxCTable);
-        double max = GetBundleAt(ActiveElement).cmapcHigh;
-        double min = GetBundleAt(ActiveElement).cmapcLow;
+        Bundle myBundle = GetBundleAt(ActiveElement);
+        double max = myBundle.cmapcHigh;
+        double min = myBundle.cmapcLow;
         if (howmany < 0 || max > min + howmany)
-            GetBundleAt(ActiveElement).cmapcLow += (int) howmany;
+            myBundle.cmapcLow += (int) howmany;
+        if (myBundle.IsDivergentColormap()) {
+            if (myBundle.cmapcLow > Bundle.MaxCTable/2)
+                myBundle.cmapcLow = Bundle.MaxCTable/2;
+            if (howmany > 0 || max - howmany > min)
+                myBundle.cmapcHigh -= (int) howmany;
+            if (myBundle.cmapcHigh < Bundle.MaxCTable/2)
+                myBundle.cmapcHigh = Bundle.MaxCTable/2;
+            }
 
-        if (GetBundleAt(ActiveElement).cmapcLow > 0)
-            GetBundleAt(ActiveElement).CompCMap();   // This is usually faster than recomputing images
+        if (myBundle.cmapcLow > 0)
+            myBundle.CompCMap();   // This is usually faster than recomputing images
         else
-            CThreshToValThresh(ActiveElement,0.25,1.0);  // If underflow a recomputation becomes necessary, but with 25% extra space
+            if (myBundle.IsDivergentColormap())
+                CThreshToValThresh(ActiveElement,0.25,0.75);  // If underflow a recomputation becomes necessary, but with 25% extra space
+            else
+                CThreshToValThresh(ActiveElement,0.25,1.0);  // If underflow a recomputation becomes necessary, but with 25% extra space
     }
 
     public void adjustColorMapUThresh(double howmuch) 
     {
 	    double howmany= (howmuch*Bundle.MaxCTable);
-        double max = GetBundleAt(ActiveElement).cmapcHigh;
-        double min = GetBundleAt(ActiveElement).cmapcLow;
+        Bundle myBundle = GetBundleAt(ActiveElement);
+        double max = myBundle.cmapcHigh;
+        double min = myBundle.cmapcLow;
         if (howmany > 0 || max + howmany > min)
-            GetBundleAt(ActiveElement).cmapcHigh += (int) howmany;
-
-        if (GetBundleAt(ActiveElement).cmapcHigh <= Bundle.MaxCTable-1)
-            GetBundleAt(ActiveElement).CompCMap();   // This is usually faster than recomputing images
+            myBundle.cmapcHigh += (int) howmany;
+        if (myBundle.IsDivergentColormap()) {
+            if (myBundle.cmapcHigh < Bundle.MaxCTable/2)
+                myBundle.cmapcHigh = Bundle.MaxCTable/2;
+            if (howmany > 0 || max > min - howmany)
+                myBundle.cmapcLow -= (int) howmany;
+            if (myBundle.cmapcLow > Bundle.MaxCTable/2)
+                myBundle.cmapcLow = Bundle.MaxCTable/2;
+            }
+        if (myBundle.cmapcHigh <= Bundle.MaxCTable-1)
+            myBundle.CompCMap();   // This is usually faster than recomputing images
+        else
+        if (myBundle.IsDivergentColormap())
+            CThreshToValThresh(ActiveElement,0.25,0.75);  // If underflow a recomputation becomes necessary, but with 25% extra space
         else
             CThreshToValThresh(ActiveElement,0.0,0.75);  // If underflow a recomputation becomes necessary, but with 25% extra space
     }
 
     public double GetMinThresh(int elem)   // returns the Effective threshold independent of which part of it is colormap and which is Mincs
     {
-        double max = GetBundleAt(elem).GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
-        double min = GetBundleAt(elem).GetMincs();
+        Bundle myBundle = GetBundleAt(elem);
+        double max = myBundle.GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
+        double min = myBundle.GetMincs();
         // double cmax = GetBundleAt(elem).cmapcHigh;    //  These are the current indices into the colormap
-        double cmin = GetBundleAt(elem).cmapcLow;    // index of the lowest currently used entry in the colortable
+        double cmin = myBundle.cmapcLow;    // index of the lowest currently used entry in the colortable
         
         // double scale = (max-min) / Bundle.MaxCTable;
         double nmin = min + (max-min)*cmin / (Bundle.MaxCTable-1); // scale*cmin;
@@ -1238,9 +1276,10 @@ public class My3DData extends Object {
 
     public double GetMaxThresh(int elem)   // returns the Effective threshold independent of which part of it is colormap and which is Mincs
     {
-        double max = GetBundleAt(elem).GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
-        double min = GetBundleAt(elem).GetMincs();
-        double cmax = GetBundleAt(elem).cmapcHigh;    //  index of the highest currently used entry in the colortable
+        Bundle myBundle = GetBundleAt(elem);
+        double max = myBundle.GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
+        double min = myBundle.GetMincs();
+        double cmax = myBundle.cmapcHigh;    //  index of the highest currently used entry in the colortable
         // double cmin = GetBundleAt(elem).cmapcLow;
         
         double nmax = min + (max-min)*cmax/(Bundle.MaxCTable-1);
@@ -1248,13 +1287,15 @@ public class My3DData extends Object {
     }
 
     
-    public void CThreshToValThresh(int elem, double facmin, double facmax)   // copies the color-map threshold to a real value threshold
+    // copies the color-map threshold to a real value threshold
+    public void CThreshToValThresh(int elem, double facmin, double facmax)
     {  // The factor determines the percentage at of the colormap at which the new min/max position will point (defaults = 0,1.0)
+        Bundle myBundle = GetBundleAt(elem);
         if (elem < 0) elem=ActiveElement;
-        double max = GetBundleAt(elem).GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
-        double min = GetBundleAt(elem).GetMincs();
-        double cmax = GetBundleAt(elem).cmapcHigh;    //  These are the current indices into the colormap
-        double cmin = GetBundleAt(elem).cmapcLow;
+        double max = myBundle.GetMaxcs();     // These are the datavalues to which the min and max of the colormap point
+        double min = myBundle.GetMincs();
+        double cmax = myBundle.cmapcHigh;    //  These are the current indices into the colormap
+        double cmin = myBundle.cmapcLow;
         // if (cmin == 0 && cmax == Bundle.MaxCTable-1) return;  // No need to change anything!
 
         double cmaxnew = (int) ((Bundle.MaxCTable-1)*facmax);   // new indices into colormap
@@ -1265,34 +1306,36 @@ public class My3DData extends Object {
         double nmax = max - scale*(Bundle.MaxCTable - (cmax+scale2*(Bundle.MaxCTable-1-cmaxnew)));
         double nmin = min + scale*(cmin - scale2*cminnew);
 
-        GetBundleAt(elem).SetMincs(nmin);
-        GetBundleAt(elem).SetMaxcs(nmax);
-        GetBundleAt(elem).cmapcLow = (int) cminnew;
-        GetBundleAt(elem).cmapcHigh = (int) cmaxnew;
+        myBundle.SetMincs(nmin);
+        myBundle.SetMaxcs(nmax);
+        myBundle.cmapcLow = (int) cminnew;
+        myBundle.cmapcHigh = (int) cmaxnew;
         InvalidateSlices();InvalidateProjs(elem);
         transferThresh(elem);
-        GetBundleAt(elem).CompCMap();
+        myBundle.CompCMap();
     }
     
     public void addLThresh(double howmuch) {
-	double howmany= (howmuch*ActElement().MaxValue);
-        double max = GetBundleAt(ActiveElement).GetMaxcs();
-        double min = GetBundleAt(ActiveElement).GetMincs();
+        Bundle myBundle = GetBundleAt(ActiveElement);
+	    double howmany= (howmuch*ActElement().MaxValue);
+        double max = myBundle.GetMaxcs();
+        double min = myBundle.GetMincs();
         if (howmany < 0 || max > min + howmany)
         {
-            GetBundleAt(ActiveElement).SetMincs(min + howmany);
+            myBundle.SetMincs(min + howmany);
             InvalidateSlices();InvalidateProjs(ActiveElement);
         }
         transferThresh(ActiveElement);
     }
 
     public void addUThresh(double howmuch) {
-	double howmany=(howmuch*ActElement().MaxValue);
-        double max = GetBundleAt(ActiveElement).GetMaxcs();
-        double min = GetBundleAt(ActiveElement).GetMincs();
+        Bundle myBundle = GetBundleAt(ActiveElement);
+	    double howmany=(howmuch*ActElement().MaxValue);
+        double max = myBundle.GetMaxcs();
+        double min = myBundle.GetMincs();
         if (howmany > 0 || max + howmany > min)
         {
-            GetBundleAt(ActiveElement).SetMaxcs(max + howmany);
+            myBundle.SetMaxcs(max + howmany);
             InvalidateSlices();InvalidateProjs(ActiveElement);
         }
         transferThresh(ActiveElement);

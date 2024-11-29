@@ -58,10 +58,13 @@ public class Bundle extends Object implements Cloneable {  // this class bundles
     public int ElementModelNr=0;    // just a number for the current model 
     final static int ElementModels=15;  // Nr of element models
     final static String ElementModelName[]={"GrayScale","Red","Green","Blue","Purple","Glow Red","Glow Green-Blue","Glow Green-Yellow","Glow Blue","Glow Purple","Rainbow","Random","Cyclic","RdBu", "RdBu_r"};  // Nr of element models
+    final static int ElementModelType[]={0,0,0,0,0,0,0,0,0,0,0,0,0,1,1}; // 0=linear, 1=diverging
     byte  cmapRed[],cmapGreen[],cmapBlue[];
     static Vector<Integer> MapSizes = new Vector<Integer>();
+    static Vector<Integer> MapTypes = new Vector<Integer>();
     static Vector<byte[]> RedMaps = new Vector<byte[]>(),GreenMaps = new Vector<byte[]>(),BlueMaps = new Vector<byte[]>(); // For user-supplied colormaps
     boolean cmapIsInverse=false;
+    boolean cmapIsDivergent=false;
     IndexColorModel ElementModel;
     boolean ShowOvUn=false;
     boolean LogScale=false;
@@ -106,6 +109,8 @@ public class Bundle extends Object implements Cloneable {  // this class bundles
     double GetMaxcs() { return maxcs;};
     void SetMincs(double val) { mincs=val;};
     void SetMaxcs(double val) { maxcs=val;};
+
+    boolean IsDivergentColormap() {return cmapIsDivergent;} // ElementModelType[ElementModelNr] == 1;
 
     void ToggleROI() {
         if (ActiveROI == rectROI)
@@ -172,11 +177,11 @@ public class Bundle extends Object implements Cloneable {  // this class bundles
     public Color GetCMapColor(int pos,int mysize)
     {
     	int cpos = (pos*(cmapcHigh-cmapcLow))/mysize + cmapcLow;
-	if (cpos >= MaxCTable) cpos = MaxCTable-1;
-	if (cpos < 0) cpos = 0;
-	int red = cmapRed[cpos] & 0xff;
-	int green = cmapGreen[cpos]& 0xff;
-	int blue = cmapBlue[cpos]& 0xff;
+        if (cpos >= MaxCTable) cpos = MaxCTable-1;
+        if (cpos < 0) cpos = 0;
+        int red = cmapRed[cpos] & 0xff;
+        int green = cmapGreen[cpos]& 0xff;
+        int blue = cmapBlue[cpos]& 0xff;
 
 	return new Color(red,green,blue);
     }
@@ -191,8 +196,14 @@ public class Bundle extends Object implements Cloneable {  // this class bundles
     double LogGain = (double) MaxCTable;
     double LogCalib = java.lang.Math.log(LogGain+1.0);
 	Random myrnd= new Random(0);
-        
-        for (int i=0;i<MaxCTable;i++)
+
+    int elem=ElementModelNr-ElementModels;
+    if (elem >= 0)
+        cmapIsDivergent = (MapTypes.elementAt(elem) == 1);
+    else
+        cmapIsDivergent = ElementModelType[ElementModelNr] == 1;
+
+    for (int i=0;i<MaxCTable;i++)
 	    {
                 tmp=((double) i-cmapcLow)/(cmapcHigh-cmapcLow);   // clipping here
                 if (tmp <= 0 || i == 0) 
@@ -219,11 +230,19 @@ public class Bundle extends Object implements Cloneable {  // this class bundles
                     }
                 }
 
-        if (Gamma != 1.0)
-        	tmp = java.lang.Math.pow(tmp,Gamma);
+        if (Gamma != 1.0) {
+            if (!cmapIsDivergent)  // linear
+                tmp = java.lang.Math.pow(tmp, Gamma);
+            else
+                tmp = (tmp < 0.5) ? java.lang.Math.pow(tmp*2.0, Gamma)/2.0 : 1.0 - java.lang.Math.pow((1.0-tmp)*2.0, Gamma)/2.0;
+        }
         
-		if (LogScale)
-		    tmp = java.lang.Math.log(LogGain*tmp+1)/LogCalib; 
+		if (LogScale) {
+            if (!cmapIsDivergent)  // linear
+		        tmp = java.lang.Math.log(LogGain*tmp+1)/LogCalib; 
+            else
+                tmp = (tmp < 0.5) ? java.lang.Math.log(LogGain*tmp*2.0+1)/LogCalib/2.0 : 1.0 - java.lang.Math.log(LogGain*(1.0-tmp)*2.0+1)/LogCalib/2.0;
+        }
 
 		switch (ElementModelNr) {
 			case 0:   // Gray scale
@@ -231,144 +250,144 @@ public class Bundle extends Object implements Cloneable {  // this class bundles
 			    cmapGreen[i]=(byte) (tmp * 255);
 			    cmapBlue[i]=(byte) (tmp * 255);
 			    break;
-                        case 1:   // Red 
-			    cmapRed[i]=(byte) (tmp * 255);
-			    cmapGreen[i]=0;
-			    cmapBlue[i]=0;
-			    break;
-                        case 2:   // Green
-			    cmapRed[i]=0;
-			    cmapGreen[i]=(byte) (tmp * 255);
-			    cmapBlue[i]=0;
-			    break;
-                        case 3:   // Blue
-			    cmapRed[i]=0;
-			    cmapGreen[i]=0;
-			    cmapBlue[i]=(byte) (tmp * 255);
-			    break;
-                        case 4:   // Violet
-			    cmapRed[i]=(byte) (tmp * 255);
-			    cmapGreen[i]=0;
-			    cmapBlue[i]=(byte) (tmp * 255);
-			    break;
-                        case 5:   // Nonlin GlowRed
-                            cmapRed[i]=(byte) (255*CClip(tmp*3.0)); 
-                            cmapGreen[i]=(byte) (255*CClip(tmp*3.0-1.0));
-                            cmapBlue[i]=(byte) (255*CClip(tmp*3.0-2.0));
-                            break;
-                        case 6:   // Nonlin GlowGreen
-                            cmapRed[i]=(byte) (255.0*CClip(tmp*3.0-2.0)); 
-                            cmapGreen[i]=(byte) (255.0*CClip(tmp*3.0));
-                            cmapBlue[i]=(byte) (255.0*CClip(tmp*3.0-1.0));	
-                            break;
-                        case 7:  // Nonlin glow Green-Yellow
-                            cmapRed[i]=(byte) (255*CClip(tmp*3.0-1.0)); 
-                            cmapGreen[i]=(byte) (255*CClip(tmp*3.0));
-                            cmapBlue[i]=(byte) (255*CClip(tmp*3.0-2.0));
-                            break;
-                        case 8:   // Nonlin glow Blue
-                            cmapBlue[i]=(byte) (255*CClip(tmp*3.0)); 
-                            cmapGreen[i]=(byte) (255*CClip(tmp*3.0-1.0));
-                            cmapRed[i]=(byte) (255*CClip(tmp*3.0-2.0));
-                            break;
-                        case 9: // Nonlin glow Violet
-                            cmapRed[i]=(byte) (255*CClip(tmp*2.0)); 
-                            cmapGreen[i]=(byte) (255*CClip(tmp*2.0-1.0));
-                            cmapBlue[i]=(byte) (255*CClip(tmp*2.0));
-                            break;
-                        case 10: // Rainbow
-                            cmapRed[i]=(byte) (255*MClip(tmp*1.5+1.0)); 
-                            cmapGreen[i]=(byte) (255*MClip(tmp*1.5+0.25));
-                            cmapBlue[i]=(byte) (255*MClip(tmp*1.5-0.5));
-                            if (i==0)
-                            {
-                            cmapRed[i]=(byte) (0); 
-                            cmapGreen[i]=(byte) (0);
-                            cmapBlue[i]=(byte) (0);
-                            }
-                            break;
-                        case 11:   // Cyclic Colors
-                            if (i==0)
-                            {
-                            cmapRed[i]=(byte) (0); 
-                            cmapGreen[i]=(byte) (0);
-                            cmapBlue[i]=(byte) (0);
-                            }
-                            else
-                            {
-                            cmapRed[i]=(byte) (255.0 * myrnd.nextDouble()); 
-                            cmapGreen[i]=(byte) (255.0 * myrnd.nextDouble());
-                            cmapBlue[i]=(byte) (255.0 * myrnd.nextDouble());
-                            }
-                            break;
-                        case 12:   // Random Colors
-                            if (tmp < 1/3.0)
-            				{
-                            cmapRed[i]=(byte) (255*MClip(1-tmp*3)); 
-                            cmapGreen[i]=(byte) (255*MClip(tmp*3));
-                            cmapBlue[i]=(byte) 0;
-            				}
-                            if (tmp>= 1/3.0 && tmp < 2/3.0)
-            				{
-                            cmapRed[i]=(byte) 0; 
-                            cmapGreen[i]=(byte) (255*MClip(1-(tmp-1/3.0)*3));
-                            cmapBlue[i]=(byte) (255*MClip((tmp-1/3.0)*3)); 
-            				}
-                            if (tmp>= 2/3.0)
-            				{
-                            cmapRed[i]=(byte) (255*MClip((tmp-2/3.0)*3)); 
-                            cmapGreen[i]=(byte) 0;
-                            cmapBlue[i]=(byte) (255*MClip(1-(tmp-2/3.0)*3));
-            				}
-                            if (i==0)
-                            {
-                                cmapRed[i]=(byte) (0); 
-                                cmapGreen[i]=(byte) (0);
-                                cmapBlue[i]=(byte) (0);
-                            }
-                            break;
-                        case 13:   // RdBu
-                            if (tmp < 1/2.0)
-            				{ // high reference (103, 0, 5) 
-                                double lb = MClip(1-tmp*2);
-                                cmapRed[i]=(byte) (255-152*lb); 
-                                cmapGreen[i]=(byte) (255-255*lb);
-                                // cmapBlue[i]=(byte) (255-224*lb);
-                                cmapBlue[i]=(byte) (255-250*lb);
-            				} 
-                            else          
-                            { //  low reference (5, 48, 97)
-                                double rb = MClip(tmp*2-1);
-                                cmapRed[i]=(byte) (255-250*rb); 
-                                cmapGreen[i]=(byte) (255-207*rb);
-                                cmapBlue[i]=(byte) (255-158*rb);
-            				}
-                            break;
-                        case 14:   // RdBu_r
-                            if (tmp < 1/2.0)
-            				{ //  low reference (5, 48, 97)
-                                double lb = MClip(1-tmp*2);
-                                cmapRed[i]=(byte) (255-250*lb); 
-                                cmapGreen[i]=(byte) (255-207*lb);
-                                cmapBlue[i]=(byte) (255-158*lb);
-            				} 
-                            else          
-                            { // high reference (103, 0, 5)
-                                double rb = MClip(tmp*2-1);
-                                cmapRed[i]=(byte) (255-152*rb); 
-                                cmapGreen[i]=(byte) (255-255*rb);
-                                cmapBlue[i]=(byte) (255-250*rb);
-            				}
-                            break;
-                    default:  // a user supplied colormap
-                        int elem=ElementModelNr-ElementModels;
-                        int MapSize=MapSizes.elementAt(elem).intValue();
-                        //int MapSize=((byte []) RedMaps.elementAt(elem)).length;
-                        int index=(int) ((MapSize-1)*tmp);
-                        cmapRed[i]=RedMaps.elementAt(elem)[index];
-                        cmapGreen[i]=GreenMaps.elementAt(elem)[index];
-                        cmapBlue[i]=BlueMaps.elementAt(elem)[index];
-		    }
+                    case 1:   // Red 
+            cmapRed[i]=(byte) (tmp * 255);
+            cmapGreen[i]=0;
+            cmapBlue[i]=0;
+            break;
+                    case 2:   // Green
+            cmapRed[i]=0;
+            cmapGreen[i]=(byte) (tmp * 255);
+            cmapBlue[i]=0;
+            break;
+                    case 3:   // Blue
+            cmapRed[i]=0;
+            cmapGreen[i]=0;
+            cmapBlue[i]=(byte) (tmp * 255);
+            break;
+                    case 4:   // Violet
+            cmapRed[i]=(byte) (tmp * 255);
+            cmapGreen[i]=0;
+            cmapBlue[i]=(byte) (tmp * 255);
+            break;
+            case 5:   // Nonlin GlowRed
+                cmapRed[i]=(byte) (255*CClip(tmp*3.0)); 
+                cmapGreen[i]=(byte) (255*CClip(tmp*3.0-1.0));
+                cmapBlue[i]=(byte) (255*CClip(tmp*3.0-2.0));
+                break;
+            case 6:   // Nonlin GlowGreen
+                cmapRed[i]=(byte) (255.0*CClip(tmp*3.0-2.0)); 
+                cmapGreen[i]=(byte) (255.0*CClip(tmp*3.0));
+                cmapBlue[i]=(byte) (255.0*CClip(tmp*3.0-1.0));	
+                break;
+            case 7:  // Nonlin glow Green-Yellow
+                cmapRed[i]=(byte) (255*CClip(tmp*3.0-1.0)); 
+                cmapGreen[i]=(byte) (255*CClip(tmp*3.0));
+                cmapBlue[i]=(byte) (255*CClip(tmp*3.0-2.0));
+                break;
+            case 8:   // Nonlin glow Blue
+                cmapBlue[i]=(byte) (255*CClip(tmp*3.0)); 
+                cmapGreen[i]=(byte) (255*CClip(tmp*3.0-1.0));
+                cmapRed[i]=(byte) (255*CClip(tmp*3.0-2.0));
+                break;
+            case 9: // Nonlin glow Violet
+                cmapRed[i]=(byte) (255*CClip(tmp*2.0)); 
+                cmapGreen[i]=(byte) (255*CClip(tmp*2.0-1.0));
+                cmapBlue[i]=(byte) (255*CClip(tmp*2.0));
+                break;
+            case 10: // Rainbow
+                cmapRed[i]=(byte) (255*MClip(tmp*1.5+1.0)); 
+                cmapGreen[i]=(byte) (255*MClip(tmp*1.5+0.25));
+                cmapBlue[i]=(byte) (255*MClip(tmp*1.5-0.5));
+                if (i==0)
+                {
+                cmapRed[i]=(byte) (0); 
+                cmapGreen[i]=(byte) (0);
+                cmapBlue[i]=(byte) (0);
+                }
+                break;
+            case 11:   // Cyclic Colors
+                if (i==0)
+                {
+                cmapRed[i]=(byte) (0); 
+                cmapGreen[i]=(byte) (0);
+                cmapBlue[i]=(byte) (0);
+                }
+                else
+                {
+                cmapRed[i]=(byte) (255.0 * myrnd.nextDouble()); 
+                cmapGreen[i]=(byte) (255.0 * myrnd.nextDouble());
+                cmapBlue[i]=(byte) (255.0 * myrnd.nextDouble());
+                }
+                break;
+            case 12:   // Random Colors
+                if (tmp < 1/3.0)
+                {
+                cmapRed[i]=(byte) (255*MClip(1-tmp*3)); 
+                cmapGreen[i]=(byte) (255*MClip(tmp*3));
+                cmapBlue[i]=(byte) 0;
+                }
+                if (tmp>= 1/3.0 && tmp < 2/3.0)
+                {
+                cmapRed[i]=(byte) 0; 
+                cmapGreen[i]=(byte) (255*MClip(1-(tmp-1/3.0)*3));
+                cmapBlue[i]=(byte) (255*MClip((tmp-1/3.0)*3)); 
+                }
+                if (tmp>= 2/3.0)
+                {
+                cmapRed[i]=(byte) (255*MClip((tmp-2/3.0)*3)); 
+                cmapGreen[i]=(byte) 0;
+                cmapBlue[i]=(byte) (255*MClip(1-(tmp-2/3.0)*3));
+                }
+                if (i==0)
+                {
+                    cmapRed[i]=(byte) (0); 
+                    cmapGreen[i]=(byte) (0);
+                    cmapBlue[i]=(byte) (0);
+                }
+                break;
+            case 13:   // RdBu
+                if (tmp < 1/2.0)
+                { // high reference (103, 0, 5) 
+                    double lb = MClip(1-tmp*2);
+                    cmapRed[i]=(byte) (255-152*lb); 
+                    cmapGreen[i]=(byte) (255-255*lb);
+                    // cmapBlue[i]=(byte) (255-224*lb);
+                    cmapBlue[i]=(byte) (255-250*lb);
+                } 
+                else          
+                { //  low reference (5, 48, 97)
+                    double rb = MClip(tmp*2-1);
+                    cmapRed[i]=(byte) (255-250*rb); 
+                    cmapGreen[i]=(byte) (255-207*rb);
+                    cmapBlue[i]=(byte) (255-158*rb);
+                }
+                break;
+            case 14:   // RdBu_r
+                if (tmp < 1/2.0)
+                { //  low reference (5, 48, 97)
+                    double lb = MClip(1-tmp*2);
+                    cmapRed[i]=(byte) (255-250*lb); 
+                    cmapGreen[i]=(byte) (255-207*lb);
+                    cmapBlue[i]=(byte) (255-158*lb);
+                } 
+                else          
+                { // high reference (103, 0, 5)
+                    double rb = MClip(tmp*2-1);
+                    cmapRed[i]=(byte) (255-152*rb); 
+                    cmapGreen[i]=(byte) (255-255*rb);
+                    cmapBlue[i]=(byte) (255-250*rb);
+                }
+                break;
+                default:  // a user supplied colormap
+                    // int elem=ElementModelNr-ElementModels;
+                    int MapSize=MapSizes.elementAt(elem).intValue();
+                    //int MapSize=((byte []) RedMaps.elementAt(elem)).length;
+                    int index=(int) ((MapSize-1)*tmp);
+                    cmapRed[i]=RedMaps.elementAt(elem)[index];
+                    cmapGreen[i]=GreenMaps.elementAt(elem)[index];
+                    cmapBlue[i]=BlueMaps.elementAt(elem)[index];
+            }
 		if (cmapIsInverse)
 		{
 			cmapRed[i] = (byte) (255-cmapRed[i]);
@@ -390,22 +409,29 @@ public class Bundle extends Object implements Cloneable {  // this class bundles
 	CompCMap();
     }
 
-    public static int AddLookUpTable(int TableSize, byte reds[], byte greens[], byte blues[])
+    public static int AddLookUpTable(int TableSize, byte reds[], byte greens[], byte blues[], int type)
     {
         MapSizes.addElement(Integer.valueOf(TableSize));
         RedMaps.addElement(reds);
         GreenMaps.addElement(greens);
         BlueMaps.addElement(blues);
+        MapTypes.addElement(Integer.valueOf(type));
         return MapSizes.size()-1;   // returns the index of the last user-model
     }
     
     public void ToggleModel(int actModel) {
 	// int oldmodel = ElementModelNr;
-        if (actModel < 0)
+        if (actModel == -1)
             ElementModelNr = ElementModelNr+1;
-	else ElementModelNr = actModel;
+        else if (actModel < -1)
+            ElementModelNr = ElementModelNr-1;
+    	        else ElementModelNr = actModel;
         
-        if (ElementModelNr >= ElementModels+MapSizes.size()) ElementModelNr=0;
+        if (ElementModelNr < 0)
+            ElementModelNr = ElementModels+MapSizes.size()-1;
+        if (ElementModelNr >= ElementModels+MapSizes.size())
+            ElementModelNr = 0;
+
 	// if (oldmodel != ElementModelNr)   // since a colormap can be inv
         CompCMap();
     }

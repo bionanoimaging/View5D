@@ -80,11 +80,11 @@ class MyMenuProcessor implements ActionListener {
 
     public MyMenuProcessor(PixelDisplay myp,ImageCanvas mypc, boolean inv, int colormap)
     {
-	data3d=myp.data3d;
-	mycanvas=mypc;
-	mypix=myp;
-	myPosL=null;
-	mycolor=colormap;
+        data3d=myp.data3d;
+        mycanvas=mypc;
+        mypix=myp;
+        myPosL=null;
+        mycolor=colormap;
         inverse=inv;
     }
 
@@ -102,11 +102,11 @@ class MyMenuProcessor implements ActionListener {
 	// System.out.println("Action: :"+e);
         if (data3d != null)
         {
-            if (inverse)
-                data3d.InvertCMap();
+            // if (inverse)
+            data3d.SetInvertCMap(inverse);
             data3d.ToggleModel(mycolor);
-            if (inverse)
-                data3d.InvertCMap();
+            //if (inverse)
+            //    data3d.InvertCMap();
             mycanvas.UpdateAll();
             mypix.CoordinatesChanged();
         }

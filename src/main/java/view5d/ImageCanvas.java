@@ -1999,26 +1999,26 @@ UpdateAllPanels();
         //my3ddata.MyHistogram.UpdateAll();
         return;
     case 'C':
-	my3ddata.ToggleColor();
-	UpdateAll();
+        my3ddata.ToggleColor();
+        UpdateAll();
 	return ;
     case 'c':
-	my3ddata.ToggleModel(-1);
-	UpdateAll();
+        my3ddata.ToggleModel(-1);
+        UpdateAll();
 	return ;
     case 'd':
-	my3ddata.InvertCMap();
-	my3ddata.ToggleModel(-1);
-	my3ddata.InvertCMap();
+        // my3ddata.InvertCMap();
+        my3ddata.ToggleModel(-2);
+        // my3ddata.InvertCMap();
 	UpdateAll();
 	return ;
     case 'o':   // in color mode, all will be set to the current state
-	my3ddata.ToggleOvUn(-1);
-	UpdateAll();
+        my3ddata.ToggleOvUn(-1);
+        UpdateAll();
 	return ;
     case 'O':
-	my3ddata.ToggleLog(-1);
-	UpdateAll();
+        my3ddata.ToggleLog(-1);
+        UpdateAll();
 	return ;
     case ',':  // moves along time direction
        	myPanel.RememberOffset();
