@@ -261,9 +261,8 @@ public class MarkerLists extends Object { // This class manages multiple lists o
     	int Red=((mycolor/256/256) & 0xff);
     	int Green=((mycolor/256) & 0xff);
     	int Blue=(mycolor & 0xff);
-    	
-    	
-        GenericDialog md= new GenericDialog("Marker List " + MarkerListNr);
+    	    	
+        AGenericDialog md= new AGenericDialog("Marker List " + MarkerListNr);
         md.addStringField("MarkerListName: ",mlist.MyName);    // Only here the element is important, since value is element specific
         md.addNumericField("Parent1: ",GetParent1Index(MarkerListNr),5);
         md.addNumericField("Parent2: ",GetParent2Index(MarkerListNr),5);

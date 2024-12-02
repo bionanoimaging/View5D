@@ -1015,6 +1015,15 @@ public class My3DData extends Object {
 	    GetBundleAt(ActiveElement).cmapIsInverse = inverse;
         // ! GetBundleAt(ActiveElement).cmapIsInverse;
     }
+
+    public void InvertCMap()
+    {
+        Bundle myBundle = GetBundleAt(ActiveElement);
+        myBundle.cmapIsInverse = ! myBundle.cmapIsInverse;
+        InvalidateColor();
+        myBundle.CompCMap();   // This is usually faster than recomputing images
+    }
+
     /*private void Setmincs(int elem, double val) {
         GetBundleAt(elem).SetMincs(val);
       }

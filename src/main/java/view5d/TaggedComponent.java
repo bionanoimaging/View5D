@@ -76,7 +76,7 @@ class TaggedComponent extends Panel { // a general superclass if called with com
     {
 	if (val.equals("none"))
 	    return;
-	System.out.println("Error Tagged Component setValue called\n"); 
+	// System.out.println("Error Tagged Component setValue called\n"); 
     }
     public Object getValue() {        // converts component attributes to value
 	// System.out.println("Error Tagged Component getValue called\n"); 

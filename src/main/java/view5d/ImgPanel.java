@@ -325,8 +325,8 @@ public class ImgPanel extends Panel implements MouseWheelListener { // the liste
         tmp = new MenuItem("Reload markers [L]");
 	tmp.addActionListener(new MyMenuProcessor(c1,'L')); SubMenu.add(tmp);
 
-        SubMenu = new Menu("Color",false);  // can eventually be dragged to the side
-        AddPopupMenu(SubMenu,doSubMenu);
+	SubMenu = new Menu("Color",false);  // can eventually be dragged to the side
+	AddPopupMenu(SubMenu,doSubMenu);
         
 	tmp = new MenuItem("Toggle multicolor overlay [C]");
 	tmp.addActionListener(new MyMenuProcessor(c1,'C')); SubMenu.add(tmp);

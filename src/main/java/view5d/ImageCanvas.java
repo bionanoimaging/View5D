@@ -1696,218 +1696,235 @@ UpdateAllPanels();
         return;
     case 'F':  // upcast datatype to short, in this case thresholds will be applied
         my3ddata.CloneShort();
-	UpdateAllPanels();
+    	UpdateAllPanels();
         return;
     case '+':
         if (checkProceed("AddMarkedElement"))
             my3ddata.AddMarkedElement(); // Adds the gate element to the active element
-	UpdateAllPanels();
-	return;
+        UpdateAllPanels();
+        return;
     case '_':
         my3ddata.AdjustOffsetToROIMean(); // Subtracts the gate element from the active element
-	UpdateAllPanels();
-	return;
+        UpdateAllPanels();
+        return;
     case '-':
         if (checkProceed("SubtractMarkedElement"))
             my3ddata.SubMarkedElement(); // Subtracts the gate element from the active element
-	UpdateAllPanels();
-	return;
+        UpdateAllPanels();
+        return;
     case '*':
         if (checkProceed("MultiplyMarkedElement"))
             my3ddata.MulMarkedElement(); // Multiplies the gate element with the active element
-	UpdateAllPanels();
-	return;
+        UpdateAllPanels();
+        return;
     case '/':
         if (checkProceed("DivideMarkedElement"))
             my3ddata.DivMarkedElement(); // Multiplies the gate element with the active element
-	UpdateAllPanels();
-	return;
+        UpdateAllPanels();
+        return;
     case 'e':  // advance one element cyclicly
     	myPanel.RememberOffset();
     	my3ddata.advanceElement(1);
     	myPanel.AdjustOffset();
     	UpdateAll();
-	return;
+        return;
     case 'E':  // advance one element cyclicly
     	myPanel.RememberOffset();
     	my3ddata.advanceElement(-1);
     	myPanel.AdjustOffset();
     	UpdateAll();
-	return;
+        return;
     case 't':  // automatic threshold adjustment
         if (my3ddata.elementsLinked)
             my3ddata.AdjustThresh();
         else
         	my3ddata.AdjustThresh(false);
 	    UpdateAll();
-	return ;
+        return ;
     case 'T':  // automatic threshold adjustment
         my3ddata.AdjustThresh();
 	    UpdateAll();
-	return ;
+        return ;
     case 'n':  //
         my3ddata.MarkerDialog();
-	// my3ddata.ToggleConnection(-1);
-	UpdateAll();
-	return;
+        // my3ddata.ToggleConnection(-1);
+        UpdateAll();
+        return;
     case 'N':  // Pops up a "Units" dialog
-	my3ddata.AxesUnitsDialog();
+    	my3ddata.AxesUnitsDialog();
         my3ddata.InvalidateProjs(-1);  // all projections are invalid
-	label.CoordsChanged();
-	break;
+        label.CoordsChanged();
+        break;
     case 'r':  // Choose Red colormap
-	my3ddata.ToggleModel(1);
-	my3ddata.ToggleOverlayDispl(1);
-	//my3ddata.MarkChannel(0);
-	UpdateAll();
-	return ;
+        my3ddata.ToggleModel(1);
+        my3ddata.ToggleOverlayDispl(1);
+        //my3ddata.MarkChannel(0);
+        UpdateAll();
+    	return ;
     case 'R':  // mark red channel
-	my3ddata.ToggleModel(5);
-	my3ddata.ToggleOverlayDispl(1);
-	//my3ddata.ClearChannel(0);
-	UpdateAll();
-	return ;
+        my3ddata.ToggleModel(5);
+        // my3ddata.ToggleOverlayDispl(1);
+        //my3ddata.ClearChannel(0);
+        UpdateAll();
+        return ;
     case 'g':  // mark green channel
-	my3ddata.ToggleModel(2);
-	my3ddata.ToggleOverlayDispl(1);
-	//my3ddata.MarkChannel(1);
-	UpdateAll();
-	return ;
-    case 'G':  // mark green channel
-	my3ddata.ToggleModel(0);
-	my3ddata.ToggleOverlayDispl(1);
-	//my3ddata.ClearChannel(1);
-	UpdateAll();
-	return;
+        my3ddata.ToggleModel(2);
+        my3ddata.ToggleOverlayDispl(1);
+        //my3ddata.MarkChannel(1);
+        UpdateAll();
+        return ;
+    case 'G':  // mark gray channel
+        my3ddata.ToggleModel(0);
+        // my3ddata.ToggleOverlayDispl(1);
+        //my3ddata.ClearChannel(1);
+        UpdateAll();
+        return;
     case 'b':  // mark blue channel
-	my3ddata.ToggleModel(3);
-	my3ddata.ToggleOverlayDispl(1);
-	//my3ddata.MarkChannel(2);
-	UpdateAll();
-	return;
-    case 'B':  // mark blue channel
-	my3ddata.ToggleModel(10);
-	my3ddata.ToggleOverlayDispl(1);
-	//my3ddata.ClearChannel(2);
-	UpdateAll();
-	return;
+        my3ddata.ToggleModel(3);
+        my3ddata.ToggleOverlayDispl(1);
+        //my3ddata.MarkChannel(2);
+        UpdateAll();
+        return;
+    case 'B':  // mark Rainbow channel
+        my3ddata.ToggleModel(10);
+        // my3ddata.ToggleOverlayDispl(1);
+        // my3ddata.ClearChannel(2);
+        UpdateAll();
+        return;
+    case '\"':  // mark Cyclic channel
+        my3ddata.ToggleModel(11);
+        // my3ddata.ToggleOverlayDispl(1);
+        // my3ddata.ClearChannel(2);
+        UpdateAll();
+        return;
+    case '§':  // mark Cyclic channel
+        my3ddata.ToggleModel(12);
+        // my3ddata.ToggleOverlayDispl(1);
+        // my3ddata.ClearChannel(2);
+        UpdateAll();
+        return;
+    case '%':  // mark RdBu channel
+        my3ddata.ToggleModel(13);
+        // my3ddata.ToggleOverlayDispl(1);
+        // my3ddata.ClearChannel(2);
+        UpdateAll();
+        return;
     case 'v':  // in/exclude channel from color display
-	my3ddata.ToggleOverlayDispl(-1);
-	UpdateAll();
-	return;
+        my3ddata.ToggleOverlayDispl(-1);
+        UpdateAll();
+        return;
     case 'V':  // in/exclude channel from color display
-	my3ddata.ToggleMulDispl(-1);
-	UpdateAll();
-	return;
+        my3ddata.ToggleMulDispl(-1);
+        UpdateAll();
+        return;
     case 'k':  // Creates a new Marker List and inserts a point
     	if (my3ddata.NumMarkerLists() > 0 && my3ddata.GetActiveMarker() != null)
     		my3ddata.NewMarkerList();
         my3ddata.SetMarker(label.px,label.py,label.pz);
-	// my3ddata.AddPoint(label.px,label.py,label.pz);
-	UpdateAll();
-	return;
+        // my3ddata.AddPoint(label.px,label.py,label.pz);
+        UpdateAll();
+    	return;
     case '\\':  // '\' Creates two new marker lists which are linked to the current list (e.g. for Cell Division)
     	my3ddata.DevideMarkerList(label.px,label.py,label.pz);
-	// my3ddata.AddPoint(label.px,label.py,label.pz);
-	UpdateAll();
-	return;
+        // my3ddata.AddPoint(label.px,label.py,label.pz);
+        UpdateAll();
+        return;
     case 'K':  // Set marker for Multiple spectral plots
         my3ddata.RemoveMarkerList();
-	UpdateAll();
-	return;
+        UpdateAll();
+        return;
     case '&':  // remove this active point
-	my3ddata.TagMarker();  // Toggles Marker Tag
-	System.out.println("Error Tagged Component setValue called\n");
-	UpdateAll();
-	return;
+        my3ddata.TagMarker();  // Toggles Marker Tag
+        // System.out.println("Error Tagged Component setValue called\n");
+        UpdateAll();
+        return;
     case 'm':  // Set marker
         my3ddata.SetMarker(label.px,label.py,label.pz);
-	if (my3ddata.FocusDispToMarker)
-		{myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();}
-	if (my3ddata.Advance)
-		myPanel.AdvancePos();
-	// System.out.println("should have advanced" + my3ddata.Advance);
-	// my3ddata.AddPoint(label.px,label.py,label.pz);
-	UpdateAll();
-	return;
+        if (my3ddata.FocusDispToMarker)
+            {myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();}
+        if (my3ddata.Advance)
+            myPanel.AdvancePos();
+        // System.out.println("should have advanced" + my3ddata.Advance);
+        // my3ddata.AddPoint(label.px,label.py,label.pz);
+        UpdateAll();
+        return;
     case 'M':  // remove this active point
-	my3ddata.RemovePoint();  // If possible
-	if (my3ddata.FocusDispToMarker)
-		{myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();}
-	UpdateAll();
-	return;
+        my3ddata.RemovePoint();  // If possible
+        if (my3ddata.FocusDispToMarker)
+            {myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();}
+        UpdateAll();
+        return;
     case '$':  // time to say goodbye
         // java.lang.System.exit(0);   // exit the application by ending the java virtual mashine
         // close the main window and free as much memory as possible
-	if (!(applet instanceof View5D))  { // This is ImageJ specific
-        my3ddata.cleanup();
-        applet.removeAll();
-        otherCanvas1.removeNotify();
-        otherCanvas2.removeNotify();
-        this.removeNotify();
-        System.gc();
-        ((View5D_) applet).dispose();
-	    }
-        else  // when called from Matlab, Python and Julia
-        {
-            Frame viewer = ((View5D) applet).aviewer;
-            for (int i=0;i<((View5D) applet).panels.size();i++) {
-                Object otherviewer = (((View5D) applet).panels.elementAt(i).getParent());
-                if ((otherviewer instanceof Frame) && (viewer != otherviewer)) {
-                    WindowEvent closingEvent = new WindowEvent((Frame) otherviewer, WindowEvent.WINDOW_CLOSING);
-                    Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(closingEvent);
-                }
+        if (!(applet instanceof View5D))  { // This is ImageJ specific
+            my3ddata.cleanup();
+            applet.removeAll();
+            otherCanvas1.removeNotify();
+            otherCanvas2.removeNotify();
+            this.removeNotify();
+            System.gc();
+            ((View5D_) applet).dispose();
             }
-            WindowEvent closingEvent = new WindowEvent(viewer, WindowEvent.WINDOW_CLOSING);
-            Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(closingEvent);
+            else  // when called from Matlab, Python and Julia
+            {
+                Frame viewer = ((View5D) applet).aviewer;
+                for (int i=0;i<((View5D) applet).panels.size();i++) {
+                    Object otherviewer = (((View5D) applet).panels.elementAt(i).getParent());
+                    if ((otherviewer instanceof Frame) && (viewer != otherviewer)) {
+                        WindowEvent closingEvent = new WindowEvent((Frame) otherviewer, WindowEvent.WINDOW_CLOSING);
+                        Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(closingEvent);
+                    }
+                }
+                WindowEvent closingEvent = new WindowEvent(viewer, WindowEvent.WINDOW_CLOSING);
+                Toolkit.getDefaultToolkit().getSystemEventQueue().postEvent(closingEvent);
 
-            // ((View5D) applet).aviewer.dispose(); // just closes teh window but does NOT free the memory!
-            //((View5D) applet).closeAll();
-            //((View5D) applet).stop();
-            //((View5D) applet).destroy();
-        }
+                // ((View5D) applet).aviewer.dispose(); // just closes teh window but does NOT free the memory!
+                //((View5D) applet).closeAll();
+                //((View5D) applet).stop();
+                //((View5D) applet).destroy();
+            }
         return;
-   case 'Q':  // remove all point to the end of the list
-	my3ddata.RemoveTrailingPoints();  // If possible
-	UpdateAll();
-	return;
+    case 'Q':  // remove all point to the end of the list
+        my3ddata.RemoveTrailingPoints();  // If possible
+        UpdateAll();
+        return;
     case '0':  // Advance marker
-    myPanel.RememberOffset();
-	my3ddata.AdvancePoint(1);
-    myPanel.AdjustOffset();
-	if (my3ddata.FocusDispToMarker)
-		{myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();} // Update the crosshair
-	UpdateAll();
-	return;
+        myPanel.RememberOffset();
+        my3ddata.AdvancePoint(1);
+        myPanel.AdjustOffset();
+        if (my3ddata.FocusDispToMarker)
+            {myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();} // Update the crosshair
+        UpdateAll();
+    	return;
     case '9':  // Devance Marker
-    myPanel.RememberOffset();
-	my3ddata.AdvancePoint(-1);
-    myPanel.AdjustOffset();
-	if (my3ddata.FocusDispToMarker)
-		{myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();}
-	UpdateAll();
-	return;
+        myPanel.RememberOffset();
+        my3ddata.AdvancePoint(-1);
+        myPanel.AdjustOffset();
+        if (my3ddata.FocusDispToMarker)
+            {myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();}
+        UpdateAll();
+    	return;
     case 'j':  // Set marker for Multiple spectral plots
-	my3ddata.AdvanceMarkerList(1);
-	if (my3ddata.FocusDispToMarker)
-		{myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();}
-	UpdateAll();
-		
-	return;
+        my3ddata.AdvanceMarkerList(1);
+        if (my3ddata.FocusDispToMarker)
+            {myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();}
+        UpdateAll();		
+    	return;
     case 'J':  
-	my3ddata.AdvanceMarkerList(-1);
-	if (my3ddata.FocusDispToMarker)
-		{myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();}
-	UpdateAll();
-	return;
+        my3ddata.AdvanceMarkerList(-1);
+        if (my3ddata.FocusDispToMarker)
+            {myPanel.setPositions(my3ddata.GetActiveMarker());CalcPrev();}
+        UpdateAll();
+        return;
     case 'w':  
-	my3ddata.ToggleMarkerListColor(1);
-	UpdateAll();
-	return;
+        my3ddata.ToggleMarkerListColor(1);
+        UpdateAll();
+        return;
     case 'W':  
-	my3ddata.AutoTrack();
-	UpdateAll();
-	return;
+        my3ddata.AutoTrack();
+        UpdateAll();
+        return;
     case '|': 
     	my3ddata.AlignOffsetsToTrack();
     	UpdateAll();
@@ -1928,7 +1945,7 @@ UpdateAllPanels();
         my3ddata.InvalidateProjs(-1);  // all projections are invalid
         my3ddata.InvalidateSlices();
     	UpdateAll();
-	return;
+    	return;
     case 's': 
         AlternateViewer xx=new AlternateViewer(applet);  // clone the data and open a new viewer
         My3DData nd=new My3DData(my3ddata);
@@ -1986,11 +2003,11 @@ UpdateAllPanels();
         return;
     case 'U':  // set Gating-element to this
         my3ddata.toggleGate(-1);   // will force the thresholds to be copied if necessary
-	UpdateAll();
+    	UpdateAll();
         return;
     case 'u':  // set Gating-element to this
         my3ddata.setGate();  // toggles. Will force the thresholds to be copied if necessary
-	UpdateAll();
+	    UpdateAll();
         return;
     case 'H':  // apply Histogram ROI selection to data
     case 'h':  // generate a Histogram
@@ -2001,53 +2018,53 @@ UpdateAllPanels();
     case 'C':
         my3ddata.ToggleColor();
         UpdateAll();
-	return ;
+    	return;
     case 'c':
         my3ddata.ToggleModel(-1);
         UpdateAll();
-	return ;
+	    return;
     case 'd':
         // my3ddata.InvertCMap();
         my3ddata.ToggleModel(-2);
         // my3ddata.InvertCMap();
-	UpdateAll();
-	return ;
+    	UpdateAll();
+	    return;
     case 'o':   // in color mode, all will be set to the current state
         my3ddata.ToggleOvUn(-1);
         UpdateAll();
-	return ;
+    	return;
     case 'O':
         my3ddata.ToggleLog(-1);
         UpdateAll();
-	return ;
+    	return;
     case ',':  // moves along time direction
        	myPanel.RememberOffset();
         my3ddata.nextTime(1);
        	myPanel.AdjustOffset();
        	UpdateAll();
-	return ;
+    	return;
     case '.':  // moves along time direction
        	myPanel.RememberOffset();
         my3ddata.nextTime(-1);
        	myPanel.AdjustOffset();
        	UpdateAll();
-	return ;        
+    	return;        
     case '(':   // moves into Z-direction
-	if (PositionValue < MaxPos-1)
-	    PositionValue++;
-        UpdateAll();
-	//pickImage();
-	//re'paint();
-	//updateothers(xprev,yprev);
-	return ;
+        if (PositionValue < MaxPos-1)
+            PositionValue++;
+            UpdateAll();
+        //pickImage();
+        //re'paint();
+        //updateothers(xprev,yprev);
+        return ;
     case ')':
-	if (PositionValue > 0)
-	    PositionValue--;
-	UpdateAll();
-	// pickImage();
-	// repaint();
-	// updateothers(xprev,yprev);
-	return ;
+        if (PositionValue > 0)
+            PositionValue--;
+        UpdateAll();
+        // pickImage();
+        // repaint();
+        // updateothers(xprev,yprev);
+        return ;
     case 'A': // Zoom in
         ChangeZoom(1.25);
         return ;
@@ -2063,21 +2080,22 @@ UpdateAllPanels();
     case 'q':
         DispPlot = ! DispPlot;  // Toggle plot display
         repaint();
-        return ;
-    
+        return ;    
     //case ':':
-	//xadd += 5;
-	//repaint();
-	//return ;
+        //xadd += 5;
+        //repaint();
+        //return ;
     //case ';':
-    //	xadd -= 5;
-	//repaint();
-	//return ;
-    case '!':   // transfers the colormap threshold to data threshold
-	// my3ddata.addLThresh(0.02);
-	    my3ddata.CThreshToValThresh(-1,0.0,1.0);
+        //	xadd -= 5;
+        //repaint();
+        //return;
+    case '!':
+        my3ddata.InvertCMap();
+        // OLD: transfers the colormap threshold to data threshold
+    	// my3ddata.addLThresh(0.02);
+	    // my3ddata.CThreshToValThresh(-1,0.0,1.0);
 	    UpdateAll();
-	    return ;
+	    return;
     case '1':
         if (my3ddata.GateActive && (my3ddata.GateElem == my3ddata.GateElem))
             {
@@ -2085,8 +2103,8 @@ UpdateAllPanels();
             }
         else
             my3ddata.adjustColorMapLThresh(0.02);
-	UpdateAll();
-	return ;
+        UpdateAll();
+        return ;
     case '2':
         if (my3ddata.GateActive && (my3ddata.GateElem == my3ddata.GateElem))
             {
@@ -2094,8 +2112,8 @@ UpdateAllPanels();
             }
         else
             my3ddata.adjustColorMapLThresh(-0.02);
- 	UpdateAll();
-	return ;
+        UpdateAll();
+        return ;
     case '3':
         if (my3ddata.GateActive && (my3ddata.GateElem == my3ddata.GateElem))
             {
@@ -2103,8 +2121,8 @@ UpdateAllPanels();
             }
         else
             my3ddata.adjustColorMapUThresh(0.02);
-	UpdateAll();
-	return ;
+        UpdateAll();
+        return ;
     case '4':
         if (my3ddata.GateActive && (my3ddata.GateElem == my3ddata.GateElem))
             {
@@ -2113,7 +2131,7 @@ UpdateAllPanels();
         else
             my3ddata.adjustColorMapUThresh(-0.02);
         UpdateAll();
-	return ;
+    	return ;
     case '5':
         if (my3ddata.GateActive && (my3ddata.GateElem == my3ddata.GateElem))
             {
@@ -2121,8 +2139,8 @@ UpdateAllPanels();
             }
         else
             my3ddata.adjustColorMapLThresh(0.002);
-	UpdateAll();
-	return ;
+        UpdateAll();
+        return ;
     case '6':
         if (my3ddata.GateActive && (my3ddata.GateElem == my3ddata.GateElem))
             {
@@ -2130,8 +2148,8 @@ UpdateAllPanels();
             }
         else
             my3ddata.adjustColorMapLThresh(-0.002);
-	UpdateAll();
-	return ;
+        UpdateAll();
+        return ;
     case '7':
         if (my3ddata.GateActive && (my3ddata.GateElem == my3ddata.GateElem))
             {
@@ -2139,8 +2157,8 @@ UpdateAllPanels();
             }
         else
             my3ddata.adjustColorMapUThresh(0.002);
-	UpdateAll();
-	return ;
+        UpdateAll();
+        return ;
     case '8':
         if (my3ddata.GateActive && (my3ddata.GateElem == my3ddata.GateElem))
             {
@@ -2148,49 +2166,48 @@ UpdateAllPanels();
             }
         else
             my3ddata.adjustColorMapUThresh(-0.002);
-	UpdateAll();
-	return ;
+        UpdateAll();
+        return ;
     case 'i':
-	//my3ddata.initThresh();
-	InitScaling();
-	otherCanvas1.InitScaling();
-	otherCanvas2.InitScaling();
-	centerCursor();
-	CalcPrev();
-	UpdateAll();
-	return ;
+        //my3ddata.initThresh();
+        InitScaling();
+        otherCanvas1.InitScaling();
+        otherCanvas2.InitScaling();
+        centerCursor();
+        CalcPrev();
+        UpdateAll();
+        return ;
     case 'I':
-	my3ddata.initGlobalThresh();
-	InitScaling();
-	centerCursor();
-	CalcPrev();
-	UpdateAll();
-	return ;
+        my3ddata.initGlobalThresh();
+        InitScaling();
+        centerCursor();
+        CalcPrev();
+        UpdateAll();
+        return ;
     case 'X':  // export to ImageJ
-	if (!(applet instanceof View5D))
-            if (DispPlot)
-                ExportValues();   // a new plot window in ImageJ will be generated
-            else
-                my3ddata.Export(DimNr, (int) PositionValue);   // a new stack in ImageJ will be generated
-	return ;
+        if (!(applet instanceof View5D))
+                if (DispPlot)
+                    ExportValues();   // a new plot window in ImageJ will be generated
+                else
+                    my3ddata.Export(DimNr, (int) PositionValue);   // a new stack in ImageJ will be generated
+        return ;
     case 'Y':  // generate ROI Mask
         my3ddata.GenerateMask(DimNr);   // a new element will be generated
-	UpdateAll();  // To display mask
-	return ;
+        UpdateAll();  // To display mask
+        return ;
     case 'l':
-	if (!(applet instanceof View5D))
-	   ((View5D_) applet).LoadImg(0);  
-	else { // do nothing
-        // my3ddata.Load(my3ddata.PrevType, my3ddata.PrevBytes, my3ddata.PrevBits, ((View5D) applet).getDocumentBase() + ((View5D) applet).filename);   //  ((View5D) applet)   commented out for now, since the document base is unknown for non-applets
-        // UpdateAllPanels();
-    }
-	UpdateAll();  // To display mask
-	return;
+        if (!(applet instanceof View5D))
+        ((View5D_) applet).LoadImg(0);  
+        else { // do nothing
+            // my3ddata.Load(my3ddata.PrevType, my3ddata.PrevBytes, my3ddata.PrevBits, ((View5D) applet).getDocumentBase() + ((View5D) applet).filename);   //  ((View5D) applet)   commented out for now, since the document base is unknown for non-applets
+            // UpdateAllPanels();
+        }
+        UpdateAll();  // To display mask
+        return;
     case 'L':
-	my3ddata.LoadMarkers();  
-        UpdateAllPanels();
-	return;
-    
+        my3ddata.LoadMarkers();  
+            UpdateAllPanels();
+        return;    
     case '?':
         label.Help();
         return ;
