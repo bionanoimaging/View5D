@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.scijava</groupId>
 		<artifactId>pom-scijava</artifactId>
-		<version>40.0.0</version>
+		<version>44.0.0</version>
 		<relativePath />
 	</parent>
 
@@ -82,6 +82,7 @@
 		<package-name>view5d</package-name>
 		<license.licenseName>mit</license.licenseName>
 		<license.copyrightOwners>Rainer Heintzmann.</license.copyrightOwners>
+		<scijava.jvm.version>8</scijava.jvm.version>
 
 		<!-- NB: Deploy releases to the SciJava Maven repository. -->
 		<releaseProfiles>sign,deploy-to-scijava</releaseProfiles>
