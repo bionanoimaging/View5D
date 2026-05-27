@@ -2,7 +2,7 @@
  * #%L
  * View5D viewer for 5D visualization.
  * %%
- * Copyright (C) 1998 - 2024 Rainer Heintzmann.
+ * Copyright (C) 1998 - 2026 Rainer Heintzmann.
  * %%
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
